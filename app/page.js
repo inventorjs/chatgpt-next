@@ -30,6 +30,7 @@ import Avatar from '@mui/material/Avatar'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import InputBase from '@mui/material/InputBase'
 import Paper from '@mui/material/Paper'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 const drawerWith = 250
 
@@ -41,15 +42,18 @@ const DrawerHeader = styled('div')(() => ({
 }))
 
 const Main = styled('main', {
-  shouldForwardProp: (prop) => !['open'].includes(prop),
-})(({ theme, open }) => ({
+  shouldForwardProp: (prop) => !['open', 'isMobile'].includes(prop),
+})(({ theme, open, isMobile }) => ({
+  position: 'relative',
+  height: '100vh',
+  overflowY: 'auto',
   flexGrow: 1,
   paddingTop: theme.spacing(10),
   transition: theme.transitions.create(['margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  marginLeft: `-${drawerWith}px`,
+  ...(!isMobile && { marginLeft: `-${drawerWith}px` }),
   ...(open && {
     marginLeft: 0,
     transition: theme.transitions.create(['margin'], {
@@ -60,14 +64,14 @@ const Main = styled('main', {
 }))
 
 const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => !['open'].includes(prop),
-})(({ theme, open }) => ({
+  shouldForwardProp: (prop) => !['open', 'isMobile'].includes(prop),
+})(({ theme, open, isMobile }) => ({
   transition: theme.transitions.create(['margin', 'width'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
-    width: `calc(100% - ${drawerWith}px)`,
+    ...(!isMobile && { width: `calc(100% - ${drawerWith}px)` }),
     transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
@@ -77,11 +81,12 @@ const AppBar = styled(MuiAppBar, {
 
 export default function Home() {
   const theme = useTheme()
-  const [open, setOpen] = useState(true)
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const [open, setOpen] = useState(!isMobile)
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <AppBar position="fixed" open={open}>
+      <AppBar position="fixed" open={open} isMobile={isMobile}>
         <Toolbar>
           <IconButton
             onClick={() => setOpen(true)}
@@ -102,7 +107,7 @@ export default function Home() {
             width: drawerWith,
           },
         }}
-        variant="persistent"
+        variant={isMobile ? 'temporary' : 'persistent'}
         anchor="left"
         open={open}
       >
@@ -155,7 +160,7 @@ export default function Home() {
           <ListSubheader>30日会话</ListSubheader>
         </List>
       </Drawer>
-      <Main open={open}>
+      <Main open={open} isMobile={isMobile}>
         <List>
           {Array.from({ length: 10 }).map(() => (
             <>
@@ -196,11 +201,11 @@ export default function Home() {
         </List>
         <Box
           sx={{
-            position: 'fixed',
+            position: 'sticky',
             bottom: 0,
-            width: 'auto',
             bgcolor: 'white',
             borderTop: '1px solid #ccc',
+            mt: theme.spacing(3),
             pb: theme.spacing(3),
           }}
         >
