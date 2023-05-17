@@ -12,7 +12,7 @@ import SendIcon from '@mui/icons-material/Send'
 import ReplayIcon from '@mui/icons-material/Replay'
 
 import Box from '@mui/material/Box'
-import Drawer from '@mui/material/Drawer'
+import MuiDrawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import MuiAppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
@@ -42,8 +42,8 @@ const DrawerHeader = styled('div')(() => ({
 }))
 
 const Main = styled('main', {
-  shouldForwardProp: (prop) => !['open', 'isMobile'].includes(prop),
-})(({ theme, open, isMobile }) => ({
+  shouldForwardProp: (prop) => !['open'].includes(prop),
+})(({ theme, open }) => ({
   position: 'relative',
   height: '100vh',
   overflowY: 'auto',
@@ -53,9 +53,9 @@ const Main = styled('main', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  ...(!isMobile && { marginLeft: `-${drawerWith}px` }),
+  [theme.breakpoints.up('sm')]: { marginLeft: `-${drawerWith}px` },
   ...(open && {
-    marginLeft: 0,
+    [theme.breakpoints.up('sm')]: { marginLeft: 0 },
     transition: theme.transitions.create(['margin'], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
@@ -64,14 +64,16 @@ const Main = styled('main', {
 }))
 
 const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => !['open', 'isMobile'].includes(prop),
-})(({ theme, open, isMobile }) => ({
+  shouldForwardProp: (prop) => !['open'].includes(prop),
+})(({ theme, open }) => ({
   transition: theme.transitions.create(['margin', 'width'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
-    ...(!isMobile && { width: `calc(100% - ${drawerWith}px)` }),
+    [theme.breakpoints.down('sm')]: {
+      width: `calc(100% - ${drawerWith}px)`,
+    },
     transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
@@ -79,14 +81,77 @@ const AppBar = styled(MuiAppBar, {
   }),
 }))
 
+const Drawer = ({ open, variant, theme, sx, onClose }) => {
+  return (
+    <MuiDrawer
+      sx={{
+        flexShrink: 0,
+        width: drawerWith,
+        '& .MuiDrawer-paper': {
+          width: drawerWith,
+        },
+        ...sx,
+      }}
+      variant={variant}
+      anchor="left"
+      open={open}
+    >
+      <DrawerHeader>
+        <IconButton color="inherit" edge="start" onClick={onClose}>
+          {theme.direction === 'ltr' ? (
+            <ChevronLeftIcon />
+          ) : (
+            <ChevronRightIcon />
+          )}
+        </IconButton>
+      </DrawerHeader>
+      <Divider />
+      <List>
+        <ListItem>
+          <Button variant="outlined" sx={{ width: '100%' }}>
+            新建会话
+          </Button>
+        </ListItem>
+        <ListSubheader>今日会话</ListSubheader>
+        <List sx={{ maxHeight: 300, overflowY: 'auto' }}>
+          {Array.from({ length: 10 }).map((k) => (
+            <ListItem
+              disablePadding
+              key={k}
+              secondaryAction={
+                <>
+                  <IconButton>
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton>
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </>
+              }
+            >
+              <ListItemButton selected={true}>
+                <ListItemIcon>
+                  <SpeakerNotesIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="helloxxx" />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <ListSubheader>30日会话</ListSubheader>
+      </List>
+    </MuiDrawer>
+  )
+}
+
 export default function Home() {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-  const [open, setOpen] = useState(!isMobile)
+  const isSm = useMediaQuery(theme.breakpoints.down('sm'))
+  const [open, setOpen] = useState(!isSm)
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <AppBar position="fixed" open={open} isMobile={isMobile}>
+      <AppBar position="fixed" open={open}>
         <Toolbar>
           <IconButton
             onClick={() => setOpen(true)}
@@ -100,67 +165,28 @@ export default function Home() {
         </Toolbar>
       </AppBar>
       <Drawer
+        open={open}
+        onClose={() => setOpen(false)}
+        variant="temporary"
+        theme={theme}
         sx={{
-          flexShrink: 0,
-          width: drawerWith,
-          '& .MuiDrawer-paper': {
-            width: drawerWith,
+          [theme.breakpoints.up('sm')]: {
+            display: 'none',
           },
         }}
-        variant={isMobile ? 'temporary' : 'persistent'}
-        anchor="left"
+      />
+      <Drawer
         open={open}
-      >
-        <DrawerHeader>
-          <IconButton
-            color="inherit"
-            edge="start"
-            onClick={() => setOpen(false)}
-          >
-            {theme.direction === 'ltr' ? (
-              <ChevronLeftIcon />
-            ) : (
-              <ChevronRightIcon />
-            )}
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <List>
-          <ListItem>
-            <Button variant="outlined" sx={{ width: '100%' }}>
-              新建会话
-            </Button>
-          </ListItem>
-          <ListSubheader>今日会话</ListSubheader>
-          <List sx={{ maxHeight: 300, overflowY: 'auto' }}>
-            {Array.from({ length: 10 }).map((k) => (
-              <ListItem
-                disablePadding
-                key={k}
-                secondaryAction={
-                  <>
-                    <IconButton>
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton>
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </>
-                }
-              >
-                <ListItemButton selected={true}>
-                  <ListItemIcon>
-                    <SpeakerNotesIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText primary="helloxxx" />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <ListSubheader>30日会话</ListSubheader>
-        </List>
-      </Drawer>
-      <Main open={open} isMobile={isMobile}>
+        onClose={() => setOpen(false)}
+        variant="persistent"
+        theme={theme}
+        sx={{
+          [theme.breakpoints.down('sm')]: {
+            display: 'none',
+          },
+        }}
+      />
+      <Main open={open}>
         <List>
           {Array.from({ length: 10 }).map(() => (
             <>
