@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Fragment, useState, useRef, useEffect } from 'react'
 import { styled, useTheme } from '@mui/material/styles'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
@@ -31,6 +31,8 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import InputBase from '@mui/material/InputBase'
 import Paper from '@mui/material/Paper'
 import useMediaQuery from '@mui/material/useMediaQuery'
+
+import { useChat } from './hooks/useChat'
 
 const drawerWith = 250
 
@@ -114,10 +116,10 @@ const Drawer = ({ open, variant, theme, sx, onClose }) => {
         </ListItem>
         <ListSubheader>今日会话</ListSubheader>
         <List sx={{ maxHeight: 300, overflowY: 'auto' }}>
-          {Array.from({ length: 10 }).map((k) => (
+          {Array.from({ length: 10 }).map((k, index) => (
             <ListItem
               disablePadding
-              key={k}
+              key={index}
               secondaryAction={
                 <>
                   <IconButton>
@@ -148,6 +150,14 @@ export default function Home() {
   const theme = useTheme()
   const isSm = useMediaQuery(theme.breakpoints.down('sm'))
   const [open, setOpen] = useState(!isSm)
+  const { content, list, isProcessing, onChange, send } = useChat()
+  const refMain = useRef()
+
+  useEffect(() => {
+    if (isProcessing && list && refMain.current) {
+      refMain.current.scrollTo(0, refMain.current.scrollHeight)
+    }
+  }, [isProcessing, list])
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -186,11 +196,13 @@ export default function Home() {
           },
         }}
       />
-      <Main open={open}>
+      <Main open={open} ref={refMain}>
         <List>
-          {Array.from({ length: 10 }).map(() => (
-            <>
-              <ListItem>
+          {list.map((item, index) => (
+            <Fragment key={index}>
+              <ListItem
+                sx={{ bgcolor: item.role === 'assistant' ? '#efefef' : '#fff' }}
+              >
                 <Container
                   sx={{ display: 'flex' }}
                   disableGutters
@@ -200,29 +212,17 @@ export default function Home() {
                     <Avatar src="" />
                   </ListItemAvatar>
                   <ListItemText>
-                    <Typography>
-                      放假哦文件噢文件佛为Joe文件佛鳄问价格哦我就佛文件佛文件佛文件佛鳄文件佛我佛文件佛文件佛文件佛文件佛文件噢发文件佛鳄文件噢发文件噢发我就饿哦发觉我饿就佛文件佛文件佛房间问哦佛文件佛鳄问
+                    <Typography
+                      sx={{
+                        whiteSpace: 'pre-line',
+                      }}
+                    >
+                      {item.content}
                     </Typography>
                   </ListItemText>
                 </Container>
               </ListItem>
-              <ListItem sx={{ bgcolor: '#efefef' }}>
-                <Container
-                  sx={{ display: 'flex' }}
-                  disableGutters
-                  maxWidth="md"
-                >
-                  <ListItemAvatar>
-                    <Avatar src="" />
-                  </ListItemAvatar>
-                  <ListItemText>
-                    <Typography>
-                      放假哦文件噢文件佛为Joe文件佛鳄问价格哦我就佛文件佛文件佛文件佛鳄文件佛我佛文件佛文件佛文件佛文件佛文件噢发文件佛鳄文件噢发文件噢发我就饿哦发觉我饿就佛文件佛文件佛房间问哦佛文件佛鳄问
-                    </Typography>
-                  </ListItemText>
-                </Container>
-              </ListItem>
-            </>
+            </Fragment>
           ))}
         </List>
         <Box
@@ -236,7 +236,7 @@ export default function Home() {
           }}
         >
           <Container maxWidth="md">
-            <Box
+            {/* <Box
               sx={{
                 display: 'flex',
                 justifyContent: 'center',
@@ -248,14 +248,19 @@ export default function Home() {
                 <ReplayIcon />
                 重新生成响应
               </Button>
-            </Box>
+            </Box> */}
             <Paper elevation={3} sx={{ display: 'flex', alignItems: 'center' }}>
               <InputBase
                 sx={{ flex: 1, ml: theme.spacing(1) }}
                 multiline
                 maxRows={3}
+                value={content}
+                onChange={(e) => onChange(e.target.value)}
               />
-              <IconButton>
+              <IconButton
+                disabled={!content.trim() || isProcessing}
+                onClick={send}
+              >
                 <SendIcon />
               </IconButton>
             </Paper>
