@@ -24,6 +24,7 @@ import {
   ChevronRight as ChevronRightIcon,
   Edit as EditIcon,
   SpeakerNotes as SpeakerNotesIcon,
+  CancelPresentation as CancelPresentationIcon 
 } from '@mui/icons-material'
 
 const drawerWith = 250
@@ -87,6 +88,9 @@ export function Sidebar({ open, onClose }) {
         >
           + 新建会话
         </Button>
+        <IconButton sx={{ position: 'absolute', right: -20 }} onClick={onClose}>
+          <CancelPresentationIcon />
+        </IconButton>
       </Box>
       <List sx={{ flex: 1, overflowY: 'auto', pt: 0 }}>
         <ListSubheader>
