@@ -1,157 +1,40 @@
 'use client'
 
-import { Fragment, useState, useRef, useEffect } from 'react'
-import { styled, useTheme } from '@mui/material/styles'
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import MenuIcon from '@mui/icons-material/Menu'
-import SpeakerNotesIcon from '@mui/icons-material/SpeakerNotes'
-import DeleteIcon from '@mui/icons-material/Delete'
-import EditIcon from '@mui/icons-material/Edit'
-import SendIcon from '@mui/icons-material/Send'
-import ReplayIcon from '@mui/icons-material/Replay'
-
-import Box from '@mui/material/Box'
-import MuiDrawer from '@mui/material/Drawer'
-import IconButton from '@mui/material/IconButton'
-import MuiAppBar from '@mui/material/AppBar'
-import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
-import Divider from '@mui/material/Divider'
-import Button from '@mui/material/Button'
-import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
-import ListItemButton from '@mui/material/ListItemButton'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
-import ListSubheader from '@mui/material/ListSubheader'
-import Container from '@mui/material/Container'
-import Avatar from '@mui/material/Avatar'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
-import InputBase from '@mui/material/InputBase'
-import Paper from '@mui/material/Paper'
-import useMediaQuery from '@mui/material/useMediaQuery'
-
+import { useState, useEffect, useRef } from 'react'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { useChat } from './hooks/useChat'
+import { Sidebar } from './components/Sidebar'
+import { Box, CssBaseline } from '@mui/material'
+import { AppBar } from './components/AppBar'
+import { Main } from './components/Main'
+import { ChatContent } from './components/ChatContent'
+import { Sender } from './components/Sender'
+import { dark } from '@mui/material/styles/createPalette'
 
-const drawerWith = 250
-
-const DrawerHeader = styled('div')(() => ({
-  height: 64,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'flex-end',
-}))
-
-const Main = styled('main', {
-  shouldForwardProp: (prop) => !['open'].includes(prop),
-})(({ theme, open }) => ({
-  position: 'relative',
-  height: '100vh',
-  overflowY: 'auto',
-  flexGrow: 1,
-  paddingTop: theme.spacing(10),
-  transition: theme.transitions.create(['margin'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  [theme.breakpoints.up('sm')]: { marginLeft: `-${drawerWith}px` },
-  ...(open && {
-    [theme.breakpoints.up('sm')]: { marginLeft: 0 },
-    transition: theme.transitions.create(['margin'], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}))
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => !['open'].includes(prop),
-})(({ theme, open }) => ({
-  transition: theme.transitions.create(['margin', 'width'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    [theme.breakpoints.down('sm')]: {
-      width: `calc(100% - ${drawerWith}px)`,
-    },
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}))
-
-const Drawer = ({ open, variant, theme, sx, onClose }) => {
-  return (
-    <MuiDrawer
-      sx={{
-        flexShrink: 0,
-        width: drawerWith,
-        '& .MuiDrawer-paper': {
-          width: drawerWith,
-        },
-        ...sx,
-      }}
-      variant={variant}
-      anchor="left"
-      open={open}
-    >
-      <DrawerHeader>
-        <IconButton color="inherit" edge="start" onClick={onClose}>
-          {theme.direction === 'ltr' ? (
-            <ChevronLeftIcon />
-          ) : (
-            <ChevronRightIcon />
-          )}
-        </IconButton>
-      </DrawerHeader>
-      <Divider />
-      <List>
-        <ListItem>
-          <Button variant="outlined" sx={{ width: '100%' }}>
-            新建会话
-          </Button>
-        </ListItem>
-        <ListSubheader>今日会话</ListSubheader>
-        <List sx={{ maxHeight: 300, overflowY: 'auto' }}>
-          {Array.from({ length: 10 }).map((k, index) => (
-            <ListItem
-              disablePadding
-              key={index}
-              secondaryAction={
-                <>
-                  <IconButton>
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton>
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </>
-              }
-            >
-              <ListItemButton selected={true}>
-                <ListItemIcon>
-                  <SpeakerNotesIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText primary="helloxxx" />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <ListSubheader>30日会话</ListSubheader>
-      </List>
-    </MuiDrawer>
-  )
-}
+const theme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+})
 
 export default function Home() {
-  const theme = useTheme()
-  const isSm = useMediaQuery(theme.breakpoints.down('sm'))
-  const [open, setOpen] = useState(!isSm)
-  const { content, list, isProcessing, onChange, send } = useChat()
+  const [open, setOpen] = useState(false)
+  const [isAutoScroll, setIsAutoScroll] = useState(false)
+  const chatStore = useChat()
   const refMain = useRef()
+  const { isProcessing, list } = chatStore
+
+  useEffect(() => {
+    if (refMain.current) {
+      refMain.current.addEventListener(
+        'scroll',
+        () => {
+          console.log('111')
+        },
+        { passive: true },
+      )
+    }
+  }, [refMain.current])
 
   useEffect(() => {
     if (isProcessing && list && refMain.current) {
@@ -160,113 +43,23 @@ export default function Home() {
   }, [isProcessing, list])
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <AppBar position="fixed" open={open}>
-        <Toolbar>
-          <IconButton
-            onClick={() => setOpen(true)}
-            sx={{ ...(open && { display: 'none' }) }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap>
-            OpenAI
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        open={open}
-        onClose={() => setOpen(false)}
-        variant="temporary"
-        theme={theme}
-        sx={{
-          [theme.breakpoints.up('sm')]: {
-            display: 'none',
-          },
-        }}
-      />
-      <Drawer
-        open={open}
-        onClose={() => setOpen(false)}
-        variant="persistent"
-        theme={theme}
-        sx={{
-          [theme.breakpoints.down('sm')]: {
-            display: 'none',
-          },
-        }}
-      />
-      <Main open={open} ref={refMain}>
-        <List>
-          {list.map((item, index) => (
-            <Fragment key={index}>
-              <ListItem
-                sx={{ bgcolor: item.role === 'assistant' ? '#efefef' : '#fff' }}
-              >
-                <Container
-                  sx={{ display: 'flex' }}
-                  disableGutters
-                  maxWidth="md"
-                >
-                  <ListItemAvatar>
-                    <Avatar src="" />
-                  </ListItemAvatar>
-                  <ListItemText>
-                    <Typography
-                      sx={{
-                        whiteSpace: 'pre-line',
-                      }}
-                    >
-                      {item.content}
-                    </Typography>
-                  </ListItemText>
-                </Container>
-              </ListItem>
-            </Fragment>
-          ))}
-        </List>
-        <Box
-          sx={{
-            position: 'sticky',
-            bottom: 0,
-            bgcolor: 'white',
-            borderTop: '1px solid #ccc',
-            mt: theme.spacing(3),
-            pb: theme.spacing(3),
-          }}
-        >
-          <Container maxWidth="md">
-            {/* <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                p: theme.spacing(1),
-                pb: theme.spacing(1),
-              }}
-            >
-              <Button variant="outlined">
-                <ReplayIcon />
-                重新生成响应
-              </Button>
-            </Box> */}
-            <Paper elevation={3} sx={{ display: 'flex', alignItems: 'center' }}>
-              <InputBase
-                sx={{ flex: 1, ml: theme.spacing(1) }}
-                multiline
-                maxRows={3}
-                value={content}
-                onChange={(e) => onChange(e.target.value)}
-              />
-              <IconButton
-                disabled={!content.trim() || isProcessing}
-                onClick={send}
-              >
-                <SendIcon />
-              </IconButton>
-            </Paper>
-          </Container>
+    <ThemeProvider theme={theme}>
+      <Box sx={{ display: 'flex' }}>
+        <Box sx={{ flex: 0 }}>
+          <Sidebar open={open} onClose={() => setOpen(false)} />
         </Box>
-      </Main>
-    </Box>
+        <Box sx={{ flex: 1 }}>
+          <Main open={open} ref={refMain}>
+            <AppBar
+              chatStore={chatStore}
+              open={open}
+              onOpen={() => setOpen(true)}
+            />
+            <ChatContent chatStore={chatStore} />
+            <Sender chatStore={chatStore} />
+          </Main>
+        </Box>
+      </Box>
+    </ThemeProvider>
   )
 }
