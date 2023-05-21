@@ -12,7 +12,7 @@ import { ChatList } from './components/ChatList'
 import { Sender } from './components/Sender'
 import * as services from './services/api-service'
 
-ApiService.init({ services })
+!ApiService.inited && ApiService.init({ services })
 
 export default function Home() {
   const [open, setOpen] = useState(false)
@@ -35,13 +35,7 @@ export default function Home() {
 
   useEffect(() => {
     if (refMain.current) {
-      refMain.current.addEventListener(
-        'scroll',
-        () => {
-          console.log('111')
-        },
-        { passive: true },
-      )
+      refMain.current.addEventListener('scroll', () => {}, { passive: true })
     }
   }, [refMain.current])
 

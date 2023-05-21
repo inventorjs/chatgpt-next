@@ -1,13 +1,16 @@
-import { ApiService, Service, Api, ResponseInterceptor, Response } from '@inventorjs/api-service';
+/**
+ * openai 服务
+ */
+import { ApiService, Service, Api, RequestInterceptor, ApiConfigFinal } from '@inventorjs/api-service';
 import sseAdapter from '@inventorjs/axios-sse-adapter';
 
-class ResInteceptor extends ResponseInterceptor {
-  async onFulfilled(response: Response<unknown, unknown>): Promise<Response<unknown, unknown>> {
-    return response
+class ReqInteceptor extends RequestInterceptor {
+  async onFulfilled<T = unknown>(config: ApiConfigFinal<unknown>): Promise<ApiConfigFinal<unknown>> {
+    return config
   }
 
-  async onRejected(error: unknown): Promise<unknown> {
-    return
+  async onRejected<T = unknown>(error: T): Promise<T | null | undefined> {
+    throw error 
   }
 }
 
@@ -15,17 +18,17 @@ class ResInteceptor extends ResponseInterceptor {
   baseURL: 'https://api.openai.com',
   method: 'post',
   $ext: {
-    responseInterceptors: [ResInteceptor]
+    requestInterceptors: [ReqInteceptor]
   },
 })
-export class OpenAI extends ApiService {
+export class OpenaiSerivce extends ApiService {
   @Api({ url: '/v1/chat/completions', adapter: sseAdapter })
-  static createChatCompletion<R>(data, config) {
-    return this.apiCall<R>(data, config)
+  static createChatCompletion(data, config) {
+    return this.apiCall<ReadableStream>(data, config)
   }
 
   @Api({ url: '/v1/images/generations' })
-  static createImage(data, config) {
-    return this.apiCall(data, config)
+  static createImage<R>(data, config) {
+    return this.apiCall<R>(data, config)
   }
 }

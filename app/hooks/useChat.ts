@@ -2,10 +2,8 @@
  * 聊天交互 hooks
  */
 import { useRef, useState } from 'react'
-import axios from 'axios'
-import sseAdapter from '@inventorjs/axios-sse-adapter'
 import { produce } from 'immer'
-import { OpenAI } from '../services/api-service';
+import { OpenaiSerivce } from '../services/api-service';
 
 interface ChatItem {
   role: 'user' | 'assistant' | 'system';
@@ -13,28 +11,23 @@ interface ChatItem {
   status?: 'error' | 'think' | 'answer';
 }
 
-const BASE_URL = 'https://api.openai.com:443/v1'
-const DEFAULT_TITLE = '新会话'
+interface SessionItem {
+  id: string
+  title: string,
+  chatList: ChatItem[]
+  createdAt: number,
+}
 
-const instanse = axios.create({
-  baseURL: BASE_URL,
-  method: 'post',
-  adapter: sseAdapter,
-  headers: {
-    'content-type': 'application/json',
-  },
-})
+const DEFAULT_TITLE = '新会话'
 
 export function useChat() {
   const [content, setContent] = useState('')
   const [title, setTitle] = useState(DEFAULT_TITLE)
   const [system, setSystem] = useState('你是一个专业程序员')
-  const [model, setModel] = useState('gpt-3.5-turbo')
-  const [type, setType] = useState<'chat' | 'image'>('chat')
   const [isProcessing, setIsProcessing] = useState(false)
   const [chatList, setChatList] = useState<ChatItem[]>([])
-  const [sessionList, setSessionList] = useState()
-  const [sessionId, setSessionId] = useState()
+  const [sessionList, setSessionList] = useState<SessionItem[]>([])
+  const [sessionId, setSessionId] = useState<string>()
   const refAbortController = useRef<AbortController>()
 
   const send = async (content, resend = false) => {
@@ -61,26 +54,18 @@ export function useChat() {
     }
     refAbortController.current = new AbortController()
     try {
-      const data = await OpenAI.createChatCompletion<ReadableStream<string>>({
+      const data = await OpenaiSerivce.createChatCompletion({
         stream: true,
         model: 'gpt-3.5-turbo',
         messages: [
           { "role": "system", "content": system },
-          ...nextChatList.map((item) => ({ role: item.role, content: item.content })),
+          ...nextChatList.filter((item) => item.status !== 'think')
+            .map((item) => ({ role: item.role, content: item.content })),
         ]
-      }, {}) 
-      // const { data } = await instanse.request<ReadableStream>({
-      //   url: '/chat/completions',
-      //     signal: refAbortController.current.signal,
-      //       data: {
-      //     stream: true,
-      //       model: 'gpt-3.5-turbo',
-      //         messages: [
-      //           { "role": "system", "content": system },
-      //           ...nextChatList.map((item) => ({ role: item.role, content: item.content })),
-      //         ]
-      //   },
-      // })
+      }, {
+        headers: {
+        },
+      }) as ReadableStream
       const reader = data.getReader()
       while (true) {
         const { value, done } = await reader.read()
@@ -144,15 +129,21 @@ export function useChat() {
     setChatList([])
   }
 
+  const onSessionChange = (sessionId: string) => {
+    setSessionId(sessionId)
+  }
+
   return {
     chatList,
+    sessionList,
+    sessionId,
     content,
-    title,
     isProcessing,
     onChange,
     onSend,
     onReAnswer,
     onAbort,
     onAdd,
+    onSessionChange,
   }
 }

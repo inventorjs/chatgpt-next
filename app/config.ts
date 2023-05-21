@@ -1,6 +1,6 @@
 export const gptModelOptions = [
-  { value: 'gpt-3.5', label: 'AI聊天(3.5)' },
-  { value: 'gpt-4.0', label: 'AI聊天(4.0)', disabled: true },
+  { value: 'gpt-3.5-turbo', label: 'GPT-3.5' },
+  { value: 'gpt-4.0', label: 'GPT-4.0' },
 ]
 
 export const modeOptions = [

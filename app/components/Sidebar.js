@@ -48,7 +48,7 @@ function ConfigForm() {
   return (
     <form>
       <FormControl size="small" fullWidth margin="dense">
-        <ToggleButtonGroup size="small" fullWidth>
+        <ToggleButtonGroup size="small" value="proxy" fullWidth>
           {netTypeOptions.map((item) => (
             <ToggleButton
               key={item.value}
@@ -61,7 +61,7 @@ function ConfigForm() {
         </ToggleButtonGroup>
       </FormControl>
       <FormControl size="small" fullWidth margin="dense">
-        <ToggleButtonGroup size="small" fullWidth>
+        <ToggleButtonGroup size="small" value="text" fullWidth>
           {modeOptions.map((item) => (
             <ToggleButton
               key={item.value}
@@ -75,7 +75,10 @@ function ConfigForm() {
       </FormControl>
       <FormControl size="small" fullWidth margin="dense">
         <InputLabel>模型</InputLabel>
-        <Select value={gptModelOptions[0].value} onChange={(e) => console.log(e)}>
+        <Select
+          value={gptModelOptions[0].value}
+          onChange={(e) => console.log(e)}
+        >
           {gptModelOptions.map((item) => (
             <MenuItem
               key={item.value}
@@ -89,7 +92,10 @@ function ConfigForm() {
       </FormControl>
       <FormControl size="small" fullWidth margin="dense">
         <InputLabel>尺寸</InputLabel>
-        <Select value={imageSizeOptions[0].value} onChange={(e) => console.log(e)}>
+        <Select
+          value={imageSizeOptions[0].value}
+          onChange={(e) => console.log(e)}
+        >
           {imageSizeOptions.map((item) => (
             <MenuItem
               key={item.value}
@@ -101,9 +107,9 @@ function ConfigForm() {
           ))}
         </Select>
       </FormControl>
-      <Box sx={{ mt: 2 }}>
+      <FormControl fullWidth margin="dense">
         <TextField label="Key" type="password" fullWidth size="small" />
-      </Box>
+      </FormControl>
     </form>
   )
 }
@@ -125,6 +131,7 @@ export function Sidebar({ open, onClose }) {
       variant={isDownSm ? 'temporary' : 'permanent'}
       anchor="left"
       open={open}
+      onClose={onClose}
     >
       <Box
         sx={{
@@ -137,33 +144,7 @@ export function Sidebar({ open, onClose }) {
         </IconButton>
       </Box>
       <List sx={{ flex: 1, overflowY: 'auto', pt: 0 }}>
-        <ListSubheader>今日会话</ListSubheader>
-        <List sx={{ py: 0 }}>
-          {Array.from({ length: 10 }).map((k, index) => (
-            <ListItem
-              disablePadding
-              key={index}
-              secondaryAction={
-                <>
-                  {/* <IconButton>
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton>
-                    <DeleteIcon fontSize="small" />
-                  </IconButton> */}
-                </>
-              }
-            >
-              <ListItemButton selected={true}>
-                <ListItemIcon sx={{ minWidth: 32 }}>
-                  <SpeakerNotesIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText primary="helloxxx" />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <ListSubheader>历史会话</ListSubheader>
+        <ListSubheader>会话列表</ListSubheader>
         <List sx={{ py: 0 }}>
           {Array.from({ length: 50 }).map((k, index) => (
             <ListItem
