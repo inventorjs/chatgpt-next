@@ -7,14 +7,13 @@ import {
   ListItemAvatar,
   Avatar,
   ListItemText,
-  Typography,
 } from '@mui/material'
 import ReactMarkdown from 'react-markdown'
 
-export const ChatContent = ({ chatStore: { list } }) => (
+export const ChatList = ({ chatStore: { chatList } }) => (
   <Box sx={{ flex: 1 }}>
     <List>
-      {list.map((item, index) => (
+      {chatList.map((item, index) => (
         <Fragment key={index}>
           <ListItem
             sx={{
@@ -33,15 +32,17 @@ export const ChatContent = ({ chatStore: { list } }) => (
               <ListItemText
                 sx={{
                   color: '#545c69',
+                  '& *': {
+                    whiteSpace: 'pre-wrap',
+                    overflowWrap: 'anywhere',
+                  },    
                   '& pre': {
-                    color: item.status === 'error' ? '#ff5f5f' : '#fff',
+                    color: item.status === 'error' ? 'error.light' : '#fff',
                     backgroundColor: '#333',
                     borderRadius: 2,
                     p: 2,
                     my: (theme) =>
                       theme.spacing(item.status === 'error' ? 1 : 2),
-                    whiteSpace: 'pre-wrap',
-                    overflowWrap: 'anywhere',
                   },
                 }}
               >

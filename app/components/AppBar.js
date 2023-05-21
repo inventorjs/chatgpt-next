@@ -15,17 +15,6 @@ const AppBarWrapper = styled(MuiAppBar, {
   [theme.breakpoints.up('sm')]: { display: 'none' },
   position: 'sticky',
   top: 0,
-  backgroundColor: '#323335',
-  // transition: theme.transitions.create(['width'], {
-  //   easing: theme.transitions.easing.sharp,
-  //   duration: theme.transitions.duration.leavingScreen,
-  // }),
-  // ...(open && {
-  //   transition: theme.transitions.create(['width'], {
-  //     easing: theme.transitions.easing.easeOut,
-  //     duration: theme.transitions.duration.enteringScreen,
-  //   }),
-  // }),
 }))
 
 export const AppBar = ({ open, chatStore: { title }, onOpen }) => (

@@ -5,6 +5,13 @@ import { useRef, useState } from 'react'
 import axios from 'axios'
 import sseAdapter from '@inventorjs/axios-sse-adapter'
 import { produce } from 'immer'
+import { OpenAI } from '../services/api-service';
+
+interface ChatItem {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  status?: 'error' | 'think' | 'answer';
+}
 
 const BASE_URL = 'https://api.openai.com:443/v1'
 const DEFAULT_TITLE = '新会话'
@@ -22,9 +29,12 @@ export function useChat() {
   const [content, setContent] = useState('')
   const [title, setTitle] = useState(DEFAULT_TITLE)
   const [system, setSystem] = useState('你是一个专业程序员')
+  const [model, setModel] = useState('gpt-3.5-turbo')
   const [type, setType] = useState<'chat' | 'image'>('chat')
   const [isProcessing, setIsProcessing] = useState(false)
-  const [list, setList] = useState<{ role: 'user' | 'assistant' | 'system', content: string, status?: 'error' | 'think' | 'answer' }[]>([])
+  const [chatList, setChatList] = useState<ChatItem[]>([])
+  const [sessionList, setSessionList] = useState()
+  const [sessionId, setSessionId] = useState()
   const refAbortController = useRef<AbortController>()
 
   const send = async (content, resend = false) => {
@@ -32,7 +42,7 @@ export function useChat() {
       return
     }
     const thinkItem = { role: 'assistant' as const, content: '思考中...', status: 'think' as const }
-    let nextList = produce(list, (draft) => {
+    let nextChatList = produce(chatList, (draft) => {
       if (!resend) {
         draft.push(
           { role: 'user', content },
@@ -43,26 +53,34 @@ export function useChat() {
       }
     })
     setContent('')
-    setList(nextList)
+    setChatList(nextChatList)
     setIsProcessing(true)
     if (!title || title === DEFAULT_TITLE) {
-      const userItem = nextList.find((item) => item.role === 'user')
+      const userItem = nextChatList.find((item) => item.role === 'user')
       userItem && setTitle(userItem.content)
     }
     refAbortController.current = new AbortController()
     try {
-      const { data } = await instanse.request<ReadableStream>({
-        url: '/chat/completions',
-        signal: refAbortController.current.signal,
-        data: {
-          stream: true,
-          model: 'gpt-3.5-turbo',
-          messages: [
-            { "role": "system", "content": system },
-            ...nextList.map((item) => ({ role: item.role, content: item.content })),
-          ]
-        },
-      })
+      const data = await OpenAI.createChatCompletion<ReadableStream<string>>({
+        stream: true,
+        model: 'gpt-3.5-turbo',
+        messages: [
+          { "role": "system", "content": system },
+          ...nextChatList.map((item) => ({ role: item.role, content: item.content })),
+        ]
+      }, {}) 
+      // const { data } = await instanse.request<ReadableStream>({
+      //   url: '/chat/completions',
+      //     signal: refAbortController.current.signal,
+      //       data: {
+      //     stream: true,
+      //       model: 'gpt-3.5-turbo',
+      //         messages: [
+      //           { "role": "system", "content": system },
+      //           ...nextChatList.map((item) => ({ role: item.role, content: item.content })),
+      //         ]
+      //   },
+      // })
       const reader = data.getReader()
       while (true) {
         const { value, done } = await reader.read()
@@ -70,38 +88,38 @@ export function useChat() {
         const valueObj = JSON.parse(value)
         const content = valueObj?.choices?.[0]?.delta?.content
         if (content) {
-          const lastAnswer = nextList.at(-1)
+          const lastAnswer = nextChatList.at(-1)
           let answerContent = lastAnswer?.content
           if (lastAnswer?.status !== 'answer') {
             answerContent = ''
           }
           const nextItem = { role: 'assistant' as const, content: answerContent + content, status: 'answer' as const }
           if (lastAnswer?.role !== 'assistant') {
-            nextList = produce(nextList, (draft) => {
+            nextChatList = produce(nextChatList, (draft) => {
               draft.push(nextItem)
             })
           } else {
-            nextList = produce(nextList, (draft) => {
+            nextChatList = produce(nextChatList, (draft) => {
               draft.splice(draft.length - 1, 1, nextItem)
             })
           }
-          setList(nextList)
+          setChatList(nextChatList)
         }
       }
     } catch (err) {
       const message = err?.response?.data?.error?.message ?? err?.message ?? '请求服务失败, 请稍后重试'
-      let lastAnswer = nextList.at(-1)
+      let lastAnswer = nextChatList.at(-1)
       const errorItem = { role: 'assistant' as const, content: message, status: 'error' as const }
       if (!lastAnswer || lastAnswer.role !== 'assistant') {
-        nextList = produce(nextList, (draft) => {
+        nextChatList = produce(nextChatList, (draft) => {
           draft.push(errorItem)
         })
       } else {
-        nextList = produce(nextList, (draft) => {
+        nextChatList = produce(nextChatList, (draft) => {
           draft.splice(draft.length - 1, 1, errorItem)
         })
       }
-      setList(nextList)
+      setChatList(nextChatList)
     } finally {
       setIsProcessing(false)
     }
@@ -122,8 +140,12 @@ export function useChat() {
     send('', true)
   }
 
+  const onAdd = () => {
+    setChatList([])
+  }
+
   return {
-    list,
+    chatList,
     content,
     title,
     isProcessing,
@@ -131,5 +153,6 @@ export function useChat() {
     onSend,
     onReAnswer,
     onAbort,
+    onAdd,
   }
 }

@@ -11,20 +11,23 @@ import {
   Send as SendIcon,
   Replay as ReplayIcon,
   Stop as StopIcon,
+  Add as AddIcon,
 } from '@mui/icons-material'
 
 export const Sender = ({
   chatStore: {
     content,
     isProcessing,
-    list,
+    chatList,
     onSend,
     onChange,
     onAbort,
     onReAnswer,
+    onAdd,
   },
 }) => {
   const refShiftDown = useRef(false)
+  const refInput = useRef()
 
   const handleKeydown = (e) => {
     if (e.keyCode === 16) {
@@ -62,13 +65,12 @@ export const Sender = ({
       }}
     >
       <Container maxWidth="md">
-        {list.length > 0 && (
+        {chatList.length > 0 && (
           <Box
             sx={{
               display: 'flex',
               justifyContent: 'center',
               p: (theme) => theme.spacing(1),
-              pb: (theme) => theme.spacing(1),
             }}
           >
             {isProcessing ? (
@@ -92,9 +94,26 @@ export const Sender = ({
             )}
           </Box>
         )}
-        <Paper elevation={3} sx={{ display: 'flex', alignItems: 'center', backgroundColor: '#fff' }}>
+        <Paper
+          elevation={3}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: '#fff',
+          }}
+        >
+          <IconButton
+            disabled={chatList.length < 1}
+            onClick={() => {
+              onAdd()
+              refInput.current.focus()
+            }}
+          >
+            <AddIcon />
+          </IconButton>
           <InputBase
-            sx={{ flex: 1, ml: (theme) => theme.spacing(1), color: '#545c69' }}
+            ref={refInput}
+            sx={{ flex: 1, color: '#545c69', px: 1 }}
             multiline
             maxRows={3}
             value={content}
