@@ -12,12 +12,13 @@ import ReactMarkdown from 'react-markdown'
 
 export const ChatList = ({ chatStore: { session } }) => (
   <Box sx={{ flex: 1 }}>
-    <List>
+    <List sx={{ pt: 0 }}>
       {session?.chatList.map((item, index) => (
         <Fragment key={index}>
           <ListItem
             sx={{
-              bgcolor: (theme) => item.role === 'assistant' ? 'action.selected' : 'action.hover',
+              bgcolor: () =>
+                item.role === 'assistant' ? 'action.selected' : 'action.hover',
               py: (theme) => theme.spacing(2),
               borderBottom: '1px solid #ddd',
               borderColor: 'divider',
@@ -36,10 +37,13 @@ export const ChatList = ({ chatStore: { session } }) => (
                   '& *': {
                     whiteSpace: 'pre-wrap',
                     overflowWrap: 'anywhere',
-                  },    
+                  },
                   '& pre': {
-                    color: item.status === 'error' ? 'error.light' : 'background.default',
-                    backgroundColor: 'text.primary',
+                    color: (theme) =>
+                      item.status === 'error'
+                        ? `error.${theme.palette.mode}`
+                        : 'background.default',
+                    backgroundColor: 'text.secondary',
                     borderRadius: 2,
                     p: 2,
                     my: (theme) =>

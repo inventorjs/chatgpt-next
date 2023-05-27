@@ -26,7 +26,7 @@ export const AppBar = ({ open, chatStore: { session }, onOpen }) => (
       <IconButton onClick={onOpen} sx={{ ...(open && { display: 'none' }) }}>
         <MenuIcon />
       </IconButton>
-      <Typography variant="h6" noWrap sx={{ flex: 1, textAlign: 'center' }}>
+      <Typography variant="h6" noWrap sx={{ flex: 1, textAlign: 'center', color: "text.primary" }}>
         {session?.title}
       </Typography>
       <IconButton
