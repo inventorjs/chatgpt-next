@@ -16,29 +16,28 @@ import * as services from './services/api-service'
 
 export default function Home() {
   const [open, setOpen] = useState(false)
-  const [themeMode, setThemeMode] = useState('light')
   const [isAutoScroll, setIsAutoScroll] = useState(false)
   const chatStore = useChat()
   const refMain = useRef()
-  const { isProcessing, list } = chatStore
+  const { isProcessing, list, config, onConfigChange } = chatStore
 
   const theme = createTheme({
     palette: {
-      mode: themeMode,
+      mode: config.themeMode,
     },
   })
 
-  useEffect(() => {
-    if (refMain.current) {
-      refMain.current.addEventListener('scroll', () => {}, { passive: true })
-    }
-  }, [refMain.current])
+  // useEffect(() => {
+  //   if (refMain.current) {
+  //     refMain.current.addEventListener('scroll', () => {}, { passive: true })
+  //   }
+  // }, [refMain.current])
 
-  useEffect(() => {
-    if (isProcessing && list && refMain.current) {
-      refMain.current.scrollTo(0, refMain.current.scrollHeight)
-    }
-  }, [isProcessing, list])
+  // useEffect(() => {
+  //   if (isProcessing && list && refMain.current) {
+  //     refMain.current.scrollTo(0, refMain.current.scrollHeight)
+  //   }
+  // }, [isProcessing, list])
 
   return (
     <ThemeProvider theme={theme}>
@@ -47,22 +46,24 @@ export default function Home() {
           <Sidebar
             open={open}
             chatStore={chatStore}
-            themeMode={themeMode}
+            themeMode={config.themeMode}
             onClose={() => setOpen(false)}
-            onThemeToggle={() => {
-              console.log('11'); setThemeMode((mode) => (mode === 'dark' ? 'light' : 'dark'))
-            }}
+            onThemeToggle={() =>
+              onConfigChange({
+                themeMode: config.themeMode === 'dark' ? 'light' : 'dark',
+              })
+            }
           />
         </Box>
         <Box sx={{ flex: 1 }}>
-          <Main open={open} ref={refMain}>
+          <Main open={open}>
             <AppBar
               chatStore={chatStore}
               open={open}
               onOpen={() => setOpen(true)}
             />
-              <ChatList chatStore={chatStore} />
-              <Sender chatStore={chatStore} />
+            <ChatList chatStore={chatStore} />
+            <Sender chatStore={chatStore} />
           </Main>
         </Box>
       </Box>

@@ -29,7 +29,7 @@ import {
   SpeakerNotes as SpeakerNotesIcon,
   CancelPresentation as CancelPresentationIcon,
   Brightness2 as DarkIcon,
-  Brightness7 as LightIcon,
+  LightMode as LightIcon,
 } from '@mui/icons-material'
 import { ConfigForm } from './ConfigForm'
 

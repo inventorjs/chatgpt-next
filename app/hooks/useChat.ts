@@ -34,6 +34,7 @@ export function useChat() {
   const [sessionList, setSessionList] = useState<SessionItem[]>([])
   const [sessionId, setSessionId] = useState<string>()
   const [config, setConfig] = useState({
+    themeMode: 'dark',
     netType: netTypeOptions[0].value,
     mode: modeOptions[0].value,
     gptModel: gptModelOptions[0].value,
@@ -111,6 +112,7 @@ export function useChat() {
     setContent('')
     setIsWaiting(true)
     setIsProcessing(true)
+    await new Promise((resolve) => setTimeout(() => resolve(''), 10000))
     refAbortController.current = new AbortController()
     try {
       const data = await OpenaiSerivce.createChatCompletion({

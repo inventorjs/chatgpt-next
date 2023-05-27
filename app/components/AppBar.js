@@ -12,7 +12,7 @@ const drawerWith = 250
 export const AppBar = ({ open, chatStore: { session }, onOpen }) => (
   <MuiAppBar
     sx={{
-      display: { sm: 'none', md: 'block'},
+      display: { md: 'none'},
       position: 'sticky',
       top: 0,
       bgcolor: (theme) => theme.palette.mode === 'dark' ? 'background.default' : 'action.selected',

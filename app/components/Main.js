@@ -1,17 +1,22 @@
-import { Box } from "@mui/material"
+import { Box } from '@mui/material'
 
 const drawerWith = 250
 
 export function Main({ children }) {
   return (
-    <Box sx={{
-      position: 'relative',
-      height: '100vh',
-      overflowY: 'auto',
-      display: 'flex',
-      flexDirection: 'column',
-      flexGrow: 1,
-      bgcolor: 'background.default',
-    }}>{children}</Box>
+    <Box
+      component="main"
+      sx={{
+        position: 'relative',
+        height: '100vh',
+        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+        bgcolor: 'background.default',
+      }}
+    >
+      {children}
+    </Box>
   )
 }
