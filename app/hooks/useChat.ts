@@ -1,9 +1,17 @@
 /**
  * 聊天交互 hooks
  */
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import { produce } from 'immer'
 import { OpenaiSerivce } from '../services/api-service';
+import { Storage } from '../services/storage';
+import {
+  gptModelOptions,
+  modeOptions,
+  imageSizeOptions,
+  netTypeOptions,
+} from '../config'
+
 
 interface ChatItem {
   role: 'user' | 'assistant' | 'system';
@@ -18,54 +26,106 @@ interface SessionItem {
   createdAt: number,
 }
 
-const DEFAULT_TITLE = '新会话'
-
 export function useChat() {
   const [content, setContent] = useState('')
-  const [title, setTitle] = useState(DEFAULT_TITLE)
-  const [system, setSystem] = useState('你是一个专业程序员')
   const [isProcessing, setIsProcessing] = useState(false)
-  const [chatList, setChatList] = useState<ChatItem[]>([])
+  const [isWaiting, setIsWaiting] = useState(false)
+  const [isSessionEdit, setIsSessionEdit] = useState(false)
   const [sessionList, setSessionList] = useState<SessionItem[]>([])
   const [sessionId, setSessionId] = useState<string>()
+  const [config, setConfig] = useState({
+    netType: netTypeOptions[0].value,
+    mode: modeOptions[0].value,
+    gptModel: gptModelOptions[0].value,
+    imageSize: imageSizeOptions[0].value,
+    apiKey: '',
+  })
+  const initRef = useRef(false)
   const refAbortController = useRef<AbortController>()
 
+  useEffect(() => {
+    if (!initRef.current) {
+      Promise.all([
+       Storage.getSessionList(),
+       Storage.getConfig(),
+      ]).then(([sessionList, config]) => {
+        setSessionList(sessionList)
+        setConfig(config)
+      }).finally(() => initRef.current = true)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (initRef.current) {
+      Storage.saveSessionList(sessionList)
+    }
+  }, [sessionList])
+
+  useEffect(() => {
+    if (initRef.current) {
+      Storage.setConfig(config)
+    }
+  }, [config])
+
+  const session = useMemo(
+    () => {
+      const session = sessionList.find((session) => session.id === sessionId)
+      return session
+    }, [sessionList, sessionId])
+
   const send = async (content, resend = false) => {
-    if (!resend && !content.trim() || isProcessing) {
+    const sendContent = content.trim()
+    if (!resend && !sendContent || isProcessing) {
       return
     }
-    const thinkItem = { role: 'assistant' as const, content: '思考中...', status: 'think' as const }
-    let nextChatList = produce(chatList, (draft) => {
-      if (!resend) {
-        draft.push(
-          { role: 'user', content },
-          thinkItem,
-        )
-      } else {
-        draft.splice(draft.length - 1, 1, thinkItem)
+
+    const userItem: ChatItem = { role: 'user', content }
+    let nextSessionList: SessionItem[]
+    let nextChatList: ChatItem[]
+    let sessionIndex = sessionList.findIndex((session) => session.id === sessionId)
+    if (!~sessionIndex) {
+      nextChatList = [userItem]
+      sessionIndex = 0
+      const id = String(Math.random())
+      const newSession = {
+        id,
+        title: content,
+        chatList: nextChatList,
+        createdAt: Date.now()
       }
-    })
-    setContent('')
-    setChatList(nextChatList)
-    setIsProcessing(true)
-    if (!title || title === DEFAULT_TITLE) {
-      const userItem = nextChatList.find((item) => item.role === 'user')
-      userItem && setTitle(userItem.content)
+      nextSessionList = [newSession, ...sessionList]
+      setSessionId(id)
+    } else {
+      nextSessionList = produce(sessionList, (draft) => {
+        if (resend) {
+          const chatList = draft[sessionIndex].chatList
+          chatList.splice(chatList.length - 1, 1)
+        } else {
+          draft[sessionIndex].chatList.push(userItem)
+        }
+      })
+      nextChatList = nextSessionList[sessionIndex].chatList
     }
+
+    setSessionList(nextSessionList)
+    setContent('')
+    setIsWaiting(true)
+    setIsProcessing(true)
     refAbortController.current = new AbortController()
     try {
       const data = await OpenaiSerivce.createChatCompletion({
         stream: true,
         model: 'gpt-3.5-turbo',
         messages: [
-          { "role": "system", "content": system },
-          ...nextChatList.filter((item) => item.status !== 'think')
-            .map((item) => ({ role: item.role, content: item.content })),
+          { "role": "system", "content": '你是一个AI助手' },
+          ...nextChatList,
         ]
       }, {
         headers: {
         },
       }) as ReadableStream
+      setIsWaiting(false)
+
       const reader = data.getReader()
       while (true) {
         const { value, done } = await reader.read()
@@ -88,7 +148,9 @@ export function useChat() {
               draft.splice(draft.length - 1, 1, nextItem)
             })
           }
-          setChatList(nextChatList)
+          setSessionList(produce(nextSessionList, (draft) => {
+            draft[sessionIndex].chatList = nextChatList
+          }))
         }
       }
     } catch (err) {
@@ -104,9 +166,12 @@ export function useChat() {
           draft.splice(draft.length - 1, 1, errorItem)
         })
       }
-      setChatList(nextChatList)
+      setSessionList(produce(nextSessionList, (draft) => {
+        draft[sessionIndex].chatList = nextChatList
+      }))
     } finally {
       setIsProcessing(false)
+      setIsWaiting(false)
     }
   }
 
@@ -125,25 +190,64 @@ export function useChat() {
     send('', true)
   }
 
-  const onAdd = () => {
-    setChatList([])
+  const onSessionAdd = () => {
+    const id = String(Math.random())
+    const newSession = {
+      id,
+      title: '新会话',
+      chatList: [],
+      createdAt: Date.now()
+    }
+    setSessionList(produce(sessionList, (draft) => { draft.unshift(newSession) }))
+    setSessionId(id)
   }
 
   const onSessionChange = (sessionId: string) => {
     setSessionId(sessionId)
   }
 
+  const onSessionTitleChange = (title: string) => {
+    const sessionIndex = sessionList.findIndex((session) => session.id === sessionId)
+    if (sessionIndex > -1) {
+      setSessionList(produce(sessionList, (draft) => { draft[sessionIndex].title = title }))
+    }
+  }
+
+  const onSessionRemove = (sessionId: string) => {
+    const sessionIndex = sessionList.findIndex((session) => session.id === sessionId)
+    if (sessionIndex > -1) {
+      setSessionList(produce(sessionList, (draft) => { draft.splice(sessionIndex, 1) }))
+      const nextSessionId = sessionList[Math.min(sessionIndex - 1, 0)]?.id ?? ''
+      setSessionId(sessionId)
+    }
+  }
+
+  const onConfigChange = (fieldValues) => {
+    setConfig((config) => ({ ...config, ...fieldValues }))
+  }
+
+  const onSessionEdit = () => setIsSessionEdit(true)
+  const onSessionEditFinish = () => setIsSessionEdit(false)
+
   return {
-    chatList,
-    sessionList,
     sessionId,
+    session,
+    sessionList,
     content,
+    config,
     isProcessing,
+    isWaiting,
+    isSessionEdit,
     onChange,
     onSend,
     onReAnswer,
     onAbort,
-    onAdd,
+    onSessionAdd,
+    onSessionTitleChange,
     onSessionChange,
+    onSessionRemove,
+    onConfigChange,
+    onSessionEdit,
+    onSessionEditFinish,
   }
 }

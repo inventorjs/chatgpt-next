@@ -18,12 +18,12 @@ export const Sender = ({
   chatStore: {
     content,
     isProcessing,
-    chatList,
+    session,
     onSend,
     onChange,
     onAbort,
     onReAnswer,
-    onAdd,
+    onSessionAdd,
   },
 }) => {
   const refShiftDown = useRef(false)
@@ -53,6 +53,8 @@ export const Sender = ({
     onChange(e.target.value)
   }
 
+  const hasChatList = session?.chatList?.length > 0
+
   return (
     <Box
       sx={{
@@ -65,7 +67,7 @@ export const Sender = ({
       }}
     >
       <Container maxWidth="md">
-        {chatList.length > 0 && (
+        {hasChatList && (
           <Box
             sx={{
               display: 'flex',
@@ -103,16 +105,16 @@ export const Sender = ({
           }}
         >
           <IconButton
-            disabled={chatList.length < 1}
+            disabled={!hasChatList}
             onClick={() => {
-              onAdd()
+              onSessionAdd()
               refInput.current.focus()
             }}
           >
             <AddIcon />
           </IconButton>
           <InputBase
-            ref={refInput}
+            inputRef={refInput}
             sx={{ flex: 1, color: '#545c69', px: 1 }}
             multiline
             maxRows={3}

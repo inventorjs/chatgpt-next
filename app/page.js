@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { ApiService } from '@inventorjs/api-service'
 import { useChat } from './hooks/useChat'
-import { Sidebar } from './components/Sidebar'
+import { Sidebar } from './components/sidebar/Sidebar'
 import { Box, CssBaseline } from '@mui/material'
 import { AppBar } from './components/AppBar'
 import { Main } from './components/Main'
@@ -16,6 +16,7 @@ import * as services from './services/api-service'
 
 export default function Home() {
   const [open, setOpen] = useState(false)
+  const [themeMode, setThemeMode] = useState('light')
   const [isAutoScroll, setIsAutoScroll] = useState(false)
   const chatStore = useChat()
   const refMain = useRef()
@@ -27,9 +28,9 @@ export default function Home() {
     },
   })
 
-  const lightTheme = createTheme({
+  const contentTheme = createTheme({
     palette: {
-      mode: 'light',
+      mode: themeMode,
     },
   })
 
@@ -49,7 +50,11 @@ export default function Home() {
     <ThemeProvider theme={darkTheme}>
       <Box sx={{ display: 'flex' }}>
         <Box sx={{ flex: 0 }}>
-          <Sidebar open={open} onClose={() => setOpen(false)} />
+          <Sidebar
+            open={open}
+            chatStore={chatStore}
+            onClose={() => setOpen(false)}
+          />
         </Box>
         <Box sx={{ flex: 1 }}>
           <Main open={open} ref={refMain}>
@@ -58,7 +63,7 @@ export default function Home() {
               open={open}
               onOpen={() => setOpen(true)}
             />
-            <ThemeProvider theme={lightTheme}>
+            <ThemeProvider theme={contentTheme}>
               <ChatList chatStore={chatStore} />
               <Sender chatStore={chatStore} />
             </ThemeProvider>

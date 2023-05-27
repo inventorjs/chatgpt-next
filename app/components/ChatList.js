@@ -10,10 +10,10 @@ import {
 } from '@mui/material'
 import ReactMarkdown from 'react-markdown'
 
-export const ChatList = ({ chatStore: { chatList } }) => (
+export const ChatList = ({ chatStore: { session } }) => (
   <Box sx={{ flex: 1 }}>
     <List>
-      {chatList.map((item, index) => (
+      {session?.chatList.map((item, index) => (
         <Fragment key={index}>
           <ListItem
             sx={{

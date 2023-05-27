@@ -17,7 +17,7 @@ const AppBarWrapper = styled(MuiAppBar, {
   top: 0,
 }))
 
-export const AppBar = ({ open, chatStore: { title }, onOpen }) => (
+export const AppBar = ({ open, chatStore: { session }, onOpen }) => (
   <AppBarWrapper>
     <Toolbar
       sx={{
@@ -28,7 +28,7 @@ export const AppBar = ({ open, chatStore: { title }, onOpen }) => (
         <MenuIcon />
       </IconButton>
       <Typography variant="h6" noWrap sx={{ flex: 1, textAlign: 'center' }}>
-        {title}
+        {session?.title}
       </Typography>
       <IconButton
         onClick={onOpen}
