@@ -60,10 +60,12 @@ export const Sender = ({
       sx={{
         position: 'sticky',
         bottom: 0,
-        bgcolor: 'white',
+        bgcolor: 'background.paper',
         borderTop: '1px solid #ccc',
+        borderColor: 'divider',
         py: (theme) => theme.spacing(2),
         my: (theme) => theme.spacing(2),
+        mb: 0,
       }}
     >
       <Container maxWidth="md">
@@ -79,7 +81,7 @@ export const Sender = ({
               <Button
                 variant="outlined"
                 onClick={onAbort}
-                sx={{ borderColor: '#ededed', color: '#878999' }}
+                sx={{ borderColor: 'action.selected', bgcolor: 'action.hover', color: 'text.secondary' }}
               >
                 <StopIcon />
                 停止响应
@@ -88,7 +90,7 @@ export const Sender = ({
               <Button
                 variant="outlined"
                 onClick={onReAnswer}
-                sx={{ borderColor: '#ededed', color: '#878999' }}
+                sx={{ borderColor: 'action.selected', bgcolor: 'action.hover', color: 'text.secondary' }}
               >
                 <ReplayIcon />
                 重新生成响应
@@ -101,7 +103,6 @@ export const Sender = ({
           sx={{
             display: 'flex',
             alignItems: 'center',
-            backgroundColor: '#fff',
           }}
         >
           <IconButton
@@ -115,7 +116,7 @@ export const Sender = ({
           </IconButton>
           <InputBase
             inputRef={refInput}
-            sx={{ flex: 1, color: '#545c69', px: 1 }}
+            sx={{ flex: 1, px: 1 }}
             multiline
             maxRows={3}
             value={content}

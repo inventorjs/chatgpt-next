@@ -17,9 +17,10 @@ export const ChatList = ({ chatStore: { session } }) => (
         <Fragment key={index}>
           <ListItem
             sx={{
-              bgcolor: item.role === 'assistant' ? '#f7f7f8' : '#fff',
+              bgcolor: (theme) => item.role === 'assistant' ? 'action.selected' : 'action.hover',
               py: (theme) => theme.spacing(2),
               borderBottom: '1px solid #ddd',
+              borderColor: 'divider',
               '& p': {
                 margin: 0,
               },
@@ -31,14 +32,14 @@ export const ChatList = ({ chatStore: { session } }) => (
               </ListItemAvatar>
               <ListItemText
                 sx={{
-                  color: '#545c69',
+                  color: 'text.primary',
                   '& *': {
                     whiteSpace: 'pre-wrap',
                     overflowWrap: 'anywhere',
                   },    
                   '& pre': {
-                    color: item.status === 'error' ? 'error.light' : '#fff',
-                    backgroundColor: '#333',
+                    color: item.status === 'error' ? 'error.light' : 'background.default',
+                    backgroundColor: 'text.primary',
                     borderRadius: 2,
                     p: 2,
                     my: (theme) =>

@@ -9,16 +9,15 @@ import { styled } from '@mui/material/styles'
 
 const drawerWith = 250
 
-const AppBarWrapper = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => !['open'].includes(prop),
-})(({ theme, open }) => ({
-  [theme.breakpoints.up('sm')]: { display: 'none' },
-  position: 'sticky',
-  top: 0,
-}))
-
 export const AppBar = ({ open, chatStore: { session }, onOpen }) => (
-  <AppBarWrapper>
+  <MuiAppBar
+    sx={{
+      display: { sm: 'none', md: 'block'},
+      position: 'sticky',
+      top: 0,
+      bgcolor: (theme) => theme.palette.mode === 'dark' ? 'background.default' : 'action.selected',
+    }} 
+  >
     <Toolbar
       sx={{
         display: 'flex',
@@ -39,5 +38,5 @@ export const AppBar = ({ open, chatStore: { session }, onOpen }) => (
         <AddIcon />
       </IconButton>
     </Toolbar>
-  </AppBarWrapper>
+  </MuiAppBar>
 )

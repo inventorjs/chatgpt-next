@@ -28,12 +28,22 @@ import {
   Save as SaveIcon,
   SpeakerNotes as SpeakerNotesIcon,
   CancelPresentation as CancelPresentationIcon,
+  Brightness2 as DarkIcon,
+  Brightness7 as LightIcon,
 } from '@mui/icons-material'
 import { ConfigForm } from './ConfigForm'
 
 const drawerWith = 250
 
-function Drawer({ display, variant, open, onClose, chatStore }) {
+function Drawer({
+  display,
+  variant,
+  open,
+  themeMode,
+  onClose,
+  onThemeToggle,
+  chatStore,
+}) {
   const {
     sessionId,
     sessionList,
@@ -46,7 +56,6 @@ function Drawer({ display, variant, open, onClose, chatStore }) {
     onSessionEditFinish,
     onSessionTitleChange,
   } = chatStore
-
   const inputRef = useRef()
 
   useEffect(() => {
@@ -76,10 +85,12 @@ function Drawer({ display, variant, open, onClose, chatStore }) {
         sx={{
           p: (theme) => theme.spacing(1),
           flex: 0,
+          display: 'flex',
+          justifyContent: 'flex-end',
         }}
       >
-        <IconButton sx={{ position: 'absolute', right: 0 }} onClick={onClose}>
-          <CancelPresentationIcon />
+        <IconButton onClick={onThemeToggle}>
+          {themeMode === 'dark' ? <DarkIcon /> : <LightIcon />}
         </IconButton>
       </Box>
       <List sx={{ flex: 1, overflowY: 'auto', pt: 0 }}>
@@ -94,15 +105,12 @@ function Drawer({ display, variant, open, onClose, chatStore }) {
                 session.id === sessionId && (
                   <>
                     {isSessionEdit ? (
-                      <IconButton>
-                        <SaveIcon
-                          fontSize="small"
-                          onClick={onSessionEditFinish}
-                        />
+                      <IconButton onClick={onSessionEditFinish}>
+                        <SaveIcon fontSize="small" />
                       </IconButton>
                     ) : (
-                      <IconButton>
-                        <EditIcon fontSize="small" onClick={onSessionEdit} />
+                      <IconButton onClick={onSessionEdit}>
+                        <EditIcon fontSize="small" />
                       </IconButton>
                     )}
                     <IconButton onClick={() => onSessionRemove(session.id)}>
@@ -143,24 +151,20 @@ function Drawer({ display, variant, open, onClose, chatStore }) {
   )
 }
 
-export function Sidebar({ open, chatStore, onClose }) {
+export function Sidebar(props) {
   const theme = useTheme()
 
   return (
     <>
       <Drawer
+        {...props}
         display={{ md: 'none' }}
         variant="temporary"
-        open={open}
-        chatStore={chatStore}
-        onClose={onClose}
       />
       <Drawer
+        {...props}
         display={{ xs: 'none', md: 'block' }}
         variant="permanent"
-        open={open}
-        chatStore={chatStore}
-        onClose={onClose}
       />
     </>
   )

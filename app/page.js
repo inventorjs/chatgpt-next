@@ -22,13 +22,7 @@ export default function Home() {
   const refMain = useRef()
   const { isProcessing, list } = chatStore
 
-  const darkTheme = createTheme({
-    palette: {
-      mode: 'dark',
-    },
-  })
-
-  const contentTheme = createTheme({
+  const theme = createTheme({
     palette: {
       mode: themeMode,
     },
@@ -47,13 +41,17 @@ export default function Home() {
   }, [isProcessing, list])
 
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={theme}>
       <Box sx={{ display: 'flex' }}>
         <Box sx={{ flex: 0 }}>
           <Sidebar
             open={open}
             chatStore={chatStore}
+            themeMode={themeMode}
             onClose={() => setOpen(false)}
+            onThemeToggle={() => {
+              console.log('11'); setThemeMode((mode) => (mode === 'dark' ? 'light' : 'dark'))
+            }}
           />
         </Box>
         <Box sx={{ flex: 1 }}>
@@ -63,10 +61,8 @@ export default function Home() {
               open={open}
               onOpen={() => setOpen(true)}
             />
-            <ThemeProvider theme={contentTheme}>
               <ChatList chatStore={chatStore} />
               <Sender chatStore={chatStore} />
-            </ThemeProvider>
           </Main>
         </Box>
       </Box>
