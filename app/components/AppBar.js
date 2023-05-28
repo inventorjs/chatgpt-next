@@ -15,7 +15,7 @@ export const AppBar = ({ open, chatStore: { session }, onOpen }) => (
       display: { md: 'none'},
       position: 'sticky',
       top: 0,
-      bgcolor: (theme) => theme.palette.mode === 'dark' ? 'background.default' : 'action.selected',
+      bgcolor: (theme) => theme.palette.mode === 'dark' ? 'background.default' : 'action.hover',
     }} 
   >
     <Toolbar

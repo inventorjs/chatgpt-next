@@ -19,7 +19,7 @@ export default function Home() {
   const [isAutoScroll, setIsAutoScroll] = useState(false)
   const chatStore = useChat()
   const refMain = useRef()
-  const { isProcessing, list, config, onConfigChange } = chatStore
+  const { isProcessing, list, config } = chatStore
 
   const theme = createTheme({
     palette: {
@@ -48,11 +48,6 @@ export default function Home() {
             chatStore={chatStore}
             themeMode={config.themeMode}
             onClose={() => setOpen(false)}
-            onThemeToggle={() =>
-              onConfigChange({
-                themeMode: config.themeMode === 'dark' ? 'light' : 'dark',
-              })
-            }
           />
         </Box>
         <Box sx={{ flex: 1 }}>

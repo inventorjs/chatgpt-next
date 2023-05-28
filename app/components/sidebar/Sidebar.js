@@ -32,6 +32,7 @@ import {
   LightMode as LightIcon,
 } from '@mui/icons-material'
 import { ConfigForm } from './ConfigForm'
+import { THEME_DARK } from '../../config'
 
 const drawerWith = 250
 
@@ -41,7 +42,6 @@ function Drawer({
   open,
   themeMode,
   onClose,
-  onThemeToggle,
   chatStore,
 }) {
   const {
@@ -55,6 +55,7 @@ function Drawer({
     onSessionEdit,
     onSessionEditFinish,
     onSessionTitleChange,
+    onThemeModeChange,
   } = chatStore
   const inputRef = useRef()
 
@@ -89,8 +90,8 @@ function Drawer({
           justifyContent: 'flex-end',
         }}
       >
-        <IconButton onClick={onThemeToggle}>
-          {themeMode === 'dark' ? <DarkIcon /> : <LightIcon />}
+        <IconButton onClick={onThemeModeChange}>
+          {themeMode === THEME_DARK ? <DarkIcon /> : <LightIcon />}
         </IconButton>
       </Box>
       <List sx={{ flex: 1, overflowY: 'auto', pt: 0 }}>
@@ -152,8 +153,6 @@ function Drawer({
 }
 
 export function Sidebar(props) {
-  const theme = useTheme()
-
   return (
     <>
       <Drawer

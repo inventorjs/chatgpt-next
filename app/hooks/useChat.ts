@@ -10,6 +10,8 @@ import {
   modeOptions,
   imageSizeOptions,
   netTypeOptions,
+  THEME_DARK,
+  THEME_LIGHT,
 } from '../config'
 
 
@@ -34,7 +36,7 @@ export function useChat() {
   const [sessionList, setSessionList] = useState<SessionItem[]>([])
   const [sessionId, setSessionId] = useState<string>()
   const [config, setConfig] = useState({
-    themeMode: 'dark',
+    themeMode: THEME_DARK,
     netType: netTypeOptions[0].value,
     mode: modeOptions[0].value,
     gptModel: gptModelOptions[0].value,
@@ -128,7 +130,7 @@ export function useChat() {
           })),
         ]
       }, {
-        baseURL: '',
+        baseURL: config.netType === 'proxy' ? '' : undefined,
         headers: {
           'authorization': `Bearer ${config.apiKey}`,
         },
@@ -239,6 +241,11 @@ export function useChat() {
   const onSessionEdit = () => setIsSessionEdit(true)
   const onSessionEditFinish = () => setIsSessionEdit(false)
 
+  const onThemeModeSwitch = () => setConfig({
+    ...config,
+    themeMode: config.themeMode === THEME_DARK ? THEME_LIGHT : THEME_DARK
+  })
+
   return {
     sessionId,
     session,
@@ -259,5 +266,6 @@ export function useChat() {
     onConfigChange,
     onSessionEdit,
     onSessionEditFinish,
+    onThemeModeSwitch,
   }
 }

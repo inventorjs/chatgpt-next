@@ -16,9 +16,9 @@ function ChatItem({ item }) {
     <ListItem
       sx={{
         bgcolor: () =>
-          item.role === 'assistant' ? 'action.selected' : 'action.hover',
+          item.role === 'assistant' ? 'action.hover' : 'background.default',
         py: (theme) => theme.spacing(2),
-        border: 1,
+        borderBottom: 1,
         borderColor: 'divider',
         '& p': {
           margin: 0,

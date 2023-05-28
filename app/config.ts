@@ -16,6 +16,10 @@ export const imageSizeOptions = [
 ]
 
 export const netTypeOptions = [
-  { value: 'proxy', label: '代理模式' },
   { value: 'direct', label: '直通模式' },
+  { value: 'proxy', label: '代理模式' },
 ]
+
+
+export const THEME_DARK = 'dark'
+export const THEME_LIGHT = 'light'
