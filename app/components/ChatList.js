@@ -27,7 +27,7 @@ function ChatItem({ item }) {
     >
       <Container sx={{ display: 'flex' }} disableGutters maxWidth="md">
         <ListItemAvatar>
-          <Avatar src={`/${item.role}.png`} />
+          <Avatar src={item.role !== 'user' ? `/${item.role}.png` : ''} />
         </ListItemAvatar>
         <ListItemText
           sx={{
