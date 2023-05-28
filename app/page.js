@@ -16,28 +16,15 @@ import * as services from './services/api-service'
 
 export default function Home() {
   const [open, setOpen] = useState(false)
-  const [isAutoScroll, setIsAutoScroll] = useState(false)
   const chatStore = useChat()
   const refMain = useRef()
-  const { isProcessing, list, config } = chatStore
+  const { config } = chatStore
 
   const theme = createTheme({
     palette: {
       mode: config.themeMode,
     },
   })
-
-  // useEffect(() => {
-  //   if (refMain.current) {
-  //     refMain.current.addEventListener('scroll', () => {}, { passive: true })
-  //   }
-  // }, [refMain.current])
-
-  // useEffect(() => {
-  //   if (isProcessing && list && refMain.current) {
-  //     refMain.current.scrollTo(0, refMain.current.scrollHeight)
-  //   }
-  // }, [isProcessing, list])
 
   return (
     <ThemeProvider theme={theme}>
@@ -47,6 +34,7 @@ export default function Home() {
             open={open}
             chatStore={chatStore}
             themeMode={config.themeMode}
+            onOpen={() => setOpen(true)}
             onClose={() => setOpen(false)}
           />
         </Box>
@@ -56,6 +44,7 @@ export default function Home() {
               chatStore={chatStore}
               open={open}
               onOpen={() => setOpen(true)}
+              onClose={() => setOpen(false)}
             />
             <ChatList chatStore={chatStore} />
             <Sender chatStore={chatStore} />

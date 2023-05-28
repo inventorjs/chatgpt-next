@@ -138,7 +138,7 @@ export function useChat() {
         headers: {
           'authorization': `Bearer ${config.apiKey}`,
         },
-      }) as ReadableStream
+      }) 
 
       setIsWaiting(false)
 

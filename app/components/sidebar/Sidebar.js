@@ -37,14 +37,7 @@ import { THEME_DARK } from '../../config'
 
 const drawerWith = 250
 
-function Drawer({
-  display,
-  variant,
-  open,
-  themeMode,
-  onClose,
-  chatStore,
-}) {
+function Drawer({ display, variant, open, themeMode, onClose, chatStore }) {
   const {
     sessionId,
     sessionList,
@@ -89,18 +82,20 @@ function Drawer({
       open={open}
       onClose={onClose}
     >
-      <Box
+      {/* <Box
         sx={{
-          p: (theme) => theme.spacing(1),
           flex: 0,
           display: 'flex',
           justifyContent: 'flex-end',
+          alignItems: 'center',
+          flex: 'none',
+          height: 64,
         }}
       >
-        <IconButton onClick={onThemeModeSwitch}>
-          {themeMode === THEME_DARK ? <DarkIcon /> : <LightIcon />}
+        <IconButton onClick={onClose}>
+          <ChevronLeftIcon />
         </IconButton>
-      </Box>
+      </Box> */}
       <List sx={{ flex: 1, overflowY: 'auto', pt: 0 }}>
         <ListSubheader>会话列表</ListSubheader>
         <List sx={{ py: 0 }}>
@@ -154,6 +149,17 @@ function Drawer({
           py: (theme) => theme.spacing(2),
         }}
       >
+        <Box
+          sx={{
+            flex: 0,
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+        >
+          <IconButton onClick={onThemeModeSwitch}>
+            {themeMode === THEME_DARK ? <DarkIcon /> : <LightIcon />}
+          </IconButton>
+        </Box>
         <ConfigForm value={config} onChange={onConfigChange} />
       </Paper>
     </MuiDrawer>
@@ -161,15 +167,16 @@ function Drawer({
 }
 
 export function Sidebar(props) {
+  const { open, onClose, onOpen } = props
+
   return (
     <>
+      <Drawer {...props} display={{ md: 'none' }} variant="temporary" />
       <Drawer
         {...props}
-        display={{ md: 'none' }}
-        variant="temporary"
-      />
-      <Drawer
-        {...props}
+        open={!open}
+        onOpen={onClose}
+        onClose={onOpen}
         display={{ xs: 'none', md: 'block' }}
         variant="permanent"
       />

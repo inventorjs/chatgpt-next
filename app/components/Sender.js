@@ -11,7 +11,7 @@ import {
   Send as SendIcon,
   Replay as ReplayIcon,
   Stop as StopIcon,
-  Add as AddIcon,
+  CleaningServices as CleaningServicesIcon,
 } from '@mui/icons-material'
 
 export const Sender = ({
@@ -112,7 +112,7 @@ export const Sender = ({
               refInput.current.focus()
             }}
           >
-            <AddIcon />
+            <CleaningServicesIcon />
           </IconButton>
           <InputBase
             inputRef={refInput}

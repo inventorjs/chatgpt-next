@@ -12,7 +12,6 @@ const drawerWith = 250
 export const AppBar = ({ open, chatStore: { session }, onOpen }) => (
   <MuiAppBar
     sx={{
-      display: { md: 'none'},
       position: 'sticky',
       top: 0,
       bgcolor: (theme) => theme.palette.mode === 'dark' ? 'background.default' : 'action.hover',
@@ -23,20 +22,12 @@ export const AppBar = ({ open, chatStore: { session }, onOpen }) => (
         display: 'flex',
       }}
     >
-      <IconButton onClick={onOpen} sx={{ ...(open && { display: 'none' }) }}>
+      <IconButton onClick={onOpen} sx={{ display: { md: 'none' } }}>
         <MenuIcon />
       </IconButton>
       <Typography variant="h6" noWrap sx={{ flex: 1, textAlign: 'center', color: "text.primary" }}>
         {session?.title}
       </Typography>
-      <IconButton
-        onClick={onOpen}
-        sx={{
-          display: { sm: 'none' },
-        }}
-      >
-        <AddIcon />
-      </IconButton>
     </Toolbar>
   </MuiAppBar>
 )
