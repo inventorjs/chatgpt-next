@@ -40,7 +40,7 @@ function ChatItem({ item }) {
               color: (theme) =>
                 item.status === 'error'
                   ? `error.${theme.palette.mode}`
-                  : 'background.default',
+                  : 'grey.50',
               bgcolor: 'grey.900',
               borderRadius: 2,
               p: 2,

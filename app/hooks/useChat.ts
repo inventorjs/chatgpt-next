@@ -12,6 +12,7 @@ import {
   netModeOptions,
   THEME_DARK,
   THEME_LIGHT,
+  DEFAULT_SESSION_NAME,
 } from '../config'
 
 
@@ -108,6 +109,9 @@ export function useChat() {
           const chatList = draft[sessionIndex].chatList
           chatList.splice(chatList.length - 1, 1)
         } else {
+          if (draft[sessionIndex].title === DEFAULT_SESSION_NAME) {
+            draft[sessionIndex].title = sendContent
+          }
           draft[sessionIndex].chatList.push(userItem)
         }
       })
@@ -213,8 +217,11 @@ export function useChat() {
     setSessionId(id)
   }
 
-  const onSessionChange = (sessionId: string) => {
-    setSessionId(sessionId)
+  const onSessionChange = (nextSessionId: string) => {
+    if (nextSessionId !== sessionId) {
+      setSessionId(nextSessionId)
+      setIsSessionEdit(false)
+    }
   }
 
   const onSessionTitleChange = (title: string) => {

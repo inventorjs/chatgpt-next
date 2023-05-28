@@ -66,6 +66,12 @@ function Drawer({
     }
   }, [isSessionEdit])
 
+  const handleKeyUp = (e) => {
+    if (e.keyCode === 13) {
+      onSessionEditFinish()
+    }
+  }
+
   return (
     <MuiDrawer
       sx={{
@@ -126,11 +132,12 @@ function Drawer({
                 <ListItemIcon sx={{ minWidth: 32 }}>
                   <SpeakerNotesIcon fontSize="small" />
                 </ListItemIcon>
-                {isSessionEdit ? (
+                {isSessionEdit && session.id === sessionId ? (
                   <InputBase
                     inputRef={inputRef}
                     value={session.title}
                     onChange={(e) => onSessionTitleChange(e.target.value)}
+                    onKeyUp={handleKeyUp}
                   />
                 ) : (
                   <ListItemText primary={session.title} />

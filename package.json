@@ -1,6 +1,6 @@
 {
-  "name": "nextjs",
-  "version": "0.1.0",
+  "name": "@inventorjs/chatgpt-next",
+  "version": "0.0.1",
   "private": true,
   "packageManager": "pnpm@8.5.0",
   "scripts": {
