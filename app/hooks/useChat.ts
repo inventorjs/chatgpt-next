@@ -50,8 +50,12 @@ export function useChat() {
         Storage.getSessionList(),
         Storage.getConfig(),
       ]).then(([sessionList, config]) => {
-        setSessionList(sessionList)
-        setConfig(config)
+        if (sessionList) {
+          setSessionList(sessionList)
+        }
+        if (config) {
+          setConfig(config)
+        }
       }).finally(() => initRef.current = true)
     }
   }, [])
