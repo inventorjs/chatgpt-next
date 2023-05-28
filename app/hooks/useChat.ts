@@ -128,6 +128,7 @@ export function useChat() {
           })),
         ]
       }, {
+        baseURL: '',
         headers: {
           'authorization': `Bearer ${config.apiKey}`,
         },
