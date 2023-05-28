@@ -149,7 +149,7 @@ export function ConfigForm({ value, onChange }) {
                 fullWidth
                 size="small"
                 value={value}
-                onBlur={(e) => handleChange({ apiKey: e.target.value })}
+                onChange={(e) => handleChange({ apiKey: e.target.value })}
               />
             )
           }}

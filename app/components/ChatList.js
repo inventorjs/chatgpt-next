@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Chat } from '@mui/icons-material'
 import {
   Box,
@@ -62,17 +62,20 @@ function ChatItem({ item }) {
 export const ChatList = ({ chatStore: { session, isWaiting } }) => {
   const chatList = session?.chatList ?? []
   const [thinkCount, setThinkCount] = useState(0)
+  const thinkRef = useRef(false)
 
   useEffect(() => {
     function think() {
       setThinkCount((c) => (c + 1) % 4)
-      if (isWaiting) {
-        setTimeout(think, 200)
+      if (thinkRef.current) {
+        setTimeout(think, 300)
       }
     }
     if (isWaiting) {
+      thinkRef.current = true
       think()
     } else {
+      thinkRef.current = false
       setThinkCount(0)
     }
   }, [isWaiting])
@@ -83,7 +86,15 @@ export const ChatList = ({ chatStore: { session, isWaiting } }) => {
         {chatList.map((item, index) => (
           <ChatItem key={index} item={item} />
         ))}
-        {isWaiting && <ChatItem item={{ role: 'assistant', content: `思考中${'.'.repeat(thinkCount)}` }} />}
+        {isWaiting && (
+          <ChatItem
+            key={chatList.length}
+            item={{
+              role: 'assistant',
+              content: `思考中${'.'.repeat(thinkCount)}`,
+            }}
+          />
+        )}
       </List>
     </Box>
   )

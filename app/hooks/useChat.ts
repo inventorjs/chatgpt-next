@@ -16,7 +16,7 @@ import {
 interface ChatItem {
   role: 'user' | 'assistant' | 'system';
   content: string;
-  status?: 'error' | 'think' | 'answer';
+  status?: 'error' | 'answer';
 }
 
 interface SessionItem {
@@ -47,8 +47,8 @@ export function useChat() {
   useEffect(() => {
     if (!initRef.current) {
       Promise.all([
-       Storage.getSessionList(),
-       Storage.getConfig(),
+        Storage.getSessionList(),
+        Storage.getConfig(),
       ]).then(([sessionList, config]) => {
         setSessionList(sessionList)
         setConfig(config)
@@ -112,18 +112,20 @@ export function useChat() {
     setContent('')
     setIsWaiting(true)
     setIsProcessing(true)
-    await new Promise((resolve) => setTimeout(() => resolve(''), 10000))
     refAbortController.current = new AbortController()
     try {
       const data = await OpenaiSerivce.createChatCompletion({
         stream: true,
-        model: 'gpt-3.5-turbo',
+        model: config.gptModel,
         messages: [
           { "role": "system", "content": '你是一个AI助手' },
-          ...nextChatList,
+          ...nextChatList.filter((item) => item.status !== 'error').map(({ role, content }) => ({
+            role, content,
+          })),
         ]
       }, {
         headers: {
+          'authorization': `Bearer ${config.apiKey}`,
         },
       }) as ReadableStream
       setIsWaiting(false)
@@ -132,8 +134,7 @@ export function useChat() {
       while (true) {
         const { value, done } = await reader.read()
         if (done) break
-        const valueObj = JSON.parse(value)
-        const content = valueObj?.choices?.[0]?.delta?.content
+        const content = value?.choices?.[0]?.delta?.content
         if (content) {
           const lastAnswer = nextChatList.at(-1)
           let answerContent = lastAnswer?.content
@@ -219,8 +220,10 @@ export function useChat() {
     const sessionIndex = sessionList.findIndex((session) => session.id === sessionId)
     if (sessionIndex > -1) {
       setSessionList(produce(sessionList, (draft) => { draft.splice(sessionIndex, 1) }))
-      const nextSessionId = sessionList[Math.min(sessionIndex - 1, 0)]?.id ?? ''
-      setSessionId(sessionId)
+      const nextSessionId = sessionList[sessionIndex + 1]?.id
+        ?? sessionList[sessionIndex - 1]?.id
+        ?? 0
+      onSessionChange(nextSessionId)
     }
   }
 

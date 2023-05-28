@@ -8,14 +8,11 @@ dependencies:
     specifier: ^11.11.0
     version: 11.11.0(@emotion/react@11.11.0)(@types/react@18.2.6)(react@18.2.0)
   '@inventorjs/api-service':
-    specifier: ^0.0.24
-    version: 0.0.24
-  '@inventorjs/axios-sse-adapter':
     specifier: ^1.0.1
-    version: 1.0.1(axios@1.4.0)
-  '@microsoft/fetch-event-source':
-    specifier: ^2.0.1
-    version: 2.0.1
+    version: 1.0.1
+  '@inventorjs/axios-stream-adapter':
+    specifier: ^1.0.2
+    version: 1.0.2(axios@1.4.0)
   '@mui/icons-material':
     specifier: ^5.11.16
     version: 5.11.16(@mui/material@5.13.0)(@types/react@18.2.6)(react@18.2.0)
@@ -523,8 +520,8 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: false
 
-  /@inventorjs/api-service@0.0.24:
-    resolution: {integrity: sha512-3vz4D8YKQshJZspvXnwjSPq4IZUc7Vwx27hIvxt4Lc75XO0Mmqd8MNUxdWD1+9xDIgMriDhOiCKXMdkVSzSo6g==}
+  /@inventorjs/api-service@1.0.1:
+    resolution: {integrity: sha512-bOmDTmNThVTNRGOtXc+MFIqQTCZiyhrrAbzLSBWtAwi3sHsFkszHv7eyRML00rUbHDF+iiW1gNtAXVmvf7TFPA==}
     dependencies:
       axios: 1.4.0
       reflect-metadata: 0.1.13
@@ -534,8 +531,8 @@ packages:
       - debug
     dev: false
 
-  /@inventorjs/axios-sse-adapter@1.0.1(axios@1.4.0):
-    resolution: {integrity: sha512-Pt66obIp3b85K0myax5SU5VR3bsEJBmGPj9u6vMtFx9ZZbWpv2vGH8vF0WOonjIPwetC3jS5XHuNlnrkABXk9A==}
+  /@inventorjs/axios-stream-adapter@1.0.2(axios@1.4.0):
+    resolution: {integrity: sha512-u4MJj31+7Aq2OFXkxuj7Kuy7wPrhbQhAFDAg8EbVLMhmTZJ1pycfvgPlNLG0VH7SGm3owKlDw6VvPU2O0GqW5g==}
     peerDependencies:
       axios: ^1.4.0
     dependencies:

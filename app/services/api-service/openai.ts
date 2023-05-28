@@ -2,7 +2,7 @@
  * openai 服务
  */
 import { ApiService, Service, Api, RequestInterceptor, ApiConfigFinal } from '@inventorjs/api-service';
-import sseAdapter from '@inventorjs/axios-sse-adapter';
+import streamAdapter from '@inventorjs/axios-stream-adapter';
 
 class ReqInteceptor extends RequestInterceptor {
   async onFulfilled<T = unknown>(config: ApiConfigFinal<unknown>): Promise<ApiConfigFinal<unknown>> {
@@ -22,7 +22,7 @@ class ReqInteceptor extends RequestInterceptor {
   },
 })
 export class OpenaiSerivce extends ApiService {
-  @Api({ url: '/v1/chat/completions', adapter: sseAdapter })
+  @Api({ url: '/v1/chat/completions', adapter: streamAdapter })
   static createChatCompletion(data, config) {
     return this.apiCall<ReadableStream>(data, config)
   }
