@@ -1,9 +1,9 @@
 export const gptModelOptions = [
   { value: 'gpt-3.5-turbo', label: 'GPT-3.5' },
-  { value: 'gpt-4.0', label: 'GPT-4.0' },
+  { value: 'gpt-4', label: 'GPT-4.0' },
 ]
 
-export const modeOptions = [
+export const aiModeOptions = [
   { value: 'text', label: '文本' },
   { value: 'image', label: '图片' },
   { value: 'audio', label: '音频', disabled: true },
@@ -15,7 +15,7 @@ export const imageSizeOptions = [
   { value: '256x256', label: '256x256' },
 ]
 
-export const netTypeOptions = [
+export const netModeOptions = [
   { value: 'direct', label: '直通模式' },
   { value: 'proxy', label: '代理模式' },
 ]

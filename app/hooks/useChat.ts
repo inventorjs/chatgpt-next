@@ -7,9 +7,9 @@ import { OpenaiSerivce } from '../services/api-service';
 import { Storage } from '../services/storage';
 import {
   gptModelOptions,
-  modeOptions,
+  aiModeOptions,
   imageSizeOptions,
-  netTypeOptions,
+  netModeOptions,
   THEME_DARK,
   THEME_LIGHT,
 } from '../config'
@@ -37,8 +37,8 @@ export function useChat() {
   const [sessionId, setSessionId] = useState<string>()
   const [config, setConfig] = useState({
     themeMode: THEME_DARK,
-    netType: netTypeOptions[0].value,
-    mode: modeOptions[0].value,
+    netMode: netModeOptions[0].value,
+    aiMode: aiModeOptions[0].value,
     gptModel: gptModelOptions[0].value,
     imageSize: imageSizeOptions[0].value,
     apiKey: '',
@@ -130,7 +130,7 @@ export function useChat() {
           })),
         ]
       }, {
-        baseURL: config.netType === 'proxy' ? '^/' : undefined,
+        baseURL: config.netMode === 'proxy' ? '^/' : '',
         headers: {
           'authorization': `Bearer ${config.apiKey}`,
         },

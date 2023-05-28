@@ -15,9 +15,9 @@ import { useForm, Controller } from 'react-hook-form'
 
 import {
   gptModelOptions,
-  modeOptions,
+  aiModeOptions,
   imageSizeOptions,
-  netTypeOptions,
+  netModeOptions,
 } from '../../config'
 
 const drawerWith = 250
@@ -27,7 +27,7 @@ export function ConfigForm({ value, onChange }) {
     values: value,
   })
 
-  const mode = watch('mode')
+  const aiMode = watch('aiMode')
 
   const handleChange = (fieldValues) => {
     onChange(fieldValues)
@@ -37,16 +37,16 @@ export function ConfigForm({ value, onChange }) {
     <form>
       <FormControl size="small" fullWidth margin="dense">
         <Controller
-          name="netType"
+          name="netMode"
           control={control}
           render={({ field: { value } }) => (
             <ToggleButtonGroup
               size="small"
               fullWidth
               value={value}
-              onChange={(e) => handleChange({ netType: e.target.value })}
+              onChange={(e) => handleChange({ netMode: e.target.value })}
             >
-              {netTypeOptions.map((item) => (
+              {netModeOptions.map((item) => (
                 <ToggleButton
                   key={item.value}
                   value={item.value}
@@ -61,16 +61,16 @@ export function ConfigForm({ value, onChange }) {
       </FormControl>
       <FormControl size="small" fullWidth margin="dense">
         <Controller
-          name="mode"
+          name="aiMode"
           control={control}
           render={({ field: { value } }) => (
             <ToggleButtonGroup
               size="small"
               fullWidth
               value={value}
-              onChange={(e) => handleChange({ mode: e.target.value })}
+              onChange={(e) => handleChange({ aiMode: e.target.value })}
             >
-              {modeOptions.map((item) => (
+              {aiModeOptions.map((item) => (
                 <ToggleButton
                   key={item.value}
                   value={item.value}
@@ -83,7 +83,7 @@ export function ConfigForm({ value, onChange }) {
           )}
         />
       </FormControl>
-      {mode === 'text' && (
+      {aiMode === 'text' && (
         <FormControl size="small" fullWidth margin="dense">
           <InputLabel>模型</InputLabel>
           <Controller
@@ -110,7 +110,7 @@ export function ConfigForm({ value, onChange }) {
           />
         </FormControl>
       )}
-      {mode === 'image' && (
+      {aiMode === 'image' && (
         <FormControl size="small" fullWidth margin="dense">
           <InputLabel>尺寸</InputLabel>
           <Controller
