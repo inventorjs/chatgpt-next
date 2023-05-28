@@ -19,6 +19,7 @@ import {
   InputBase,
   ToggleButtonGroup,
   ToggleButton,
+  Paper,
 } from '@mui/material'
 import { styled, useTheme } from '@mui/material/styles'
 import {
@@ -55,7 +56,7 @@ function Drawer({
     onSessionEdit,
     onSessionEditFinish,
     onSessionTitleChange,
-    onThemeModeChange,
+    onThemeModeSwitch,
   } = chatStore
   const inputRef = useRef()
 
@@ -90,7 +91,7 @@ function Drawer({
           justifyContent: 'flex-end',
         }}
       >
-        <IconButton onClick={onThemeModeChange}>
+        <IconButton onClick={onThemeModeSwitch}>
           {themeMode === THEME_DARK ? <DarkIcon /> : <LightIcon />}
         </IconButton>
       </Box>
@@ -139,7 +140,7 @@ function Drawer({
           ))}
         </List>
       </List>
-      <Box
+      <Paper
         sx={{
           flex: 0,
           px: (theme) => theme.spacing(1),
@@ -147,7 +148,7 @@ function Drawer({
         }}
       >
         <ConfigForm value={config} onChange={onConfigChange} />
-      </Box>
+      </Paper>
     </MuiDrawer>
   )
 }

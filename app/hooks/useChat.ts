@@ -130,11 +130,12 @@ export function useChat() {
           })),
         ]
       }, {
-        baseURL: config.netType === 'proxy' ? '' : undefined,
+        baseURL: config.netType === 'proxy' ? '^/' : undefined,
         headers: {
           'authorization': `Bearer ${config.apiKey}`,
         },
       }) as ReadableStream
+
       setIsWaiting(false)
 
       const reader = data.getReader()
