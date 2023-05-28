@@ -8,8 +8,8 @@ dependencies:
     specifier: ^11.11.0
     version: 11.11.0(@emotion/react@11.11.0)(@types/react@18.2.6)(react@18.2.0)
   '@inventorjs/api-service':
-    specifier: ^1.0.1
-    version: 1.0.1
+    specifier: ^1.0.2
+    version: 1.0.2
   '@inventorjs/axios-stream-adapter':
     specifier: ^1.0.2
     version: 1.0.2(axios@1.4.0)
@@ -520,8 +520,8 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: false
 
-  /@inventorjs/api-service@1.0.1:
-    resolution: {integrity: sha512-bOmDTmNThVTNRGOtXc+MFIqQTCZiyhrrAbzLSBWtAwi3sHsFkszHv7eyRML00rUbHDF+iiW1gNtAXVmvf7TFPA==}
+  /@inventorjs/api-service@1.0.2:
+    resolution: {integrity: sha512-/0ZOPc5cVUtdl6Lmj3lVgplJ4gkzlQCE9UjRNaJHjWCG2dH9+d5O/u7YrlXCaw/qPM8E4ybxYvOX5D1a6B7/MQ==}
     dependencies:
       axios: 1.4.0
       reflect-metadata: 0.1.13

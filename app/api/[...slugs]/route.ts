@@ -12,7 +12,7 @@ export async function POST(request: NextRequest, { params }: { params: { slugs: 
   const urlObj = new URL(`${baseURL}${apiPath}`)
   const { authorization = '', ['content-type']: contentType = 'application/json' } = headers
 
-  const stream = await new Promise<ReadableStream>((resolve, reject) => {
+  const response = await new Promise<Response>((resolve, reject) => {
     const request = https.request({
       protocol: urlObj.protocol,
       hostname: urlObj.hostname,
@@ -35,7 +35,13 @@ export async function POST(request: NextRequest, { params }: { params: { slugs: 
           })
         },
       })
-      resolve(stream)
+      const response = new Response(stream)
+      Object.entries(res.headers).forEach(([key, val]) => {
+        if (key && val && typeof val === 'string') {
+          response.headers.set(key, val)
+        }
+      })
+      resolve(response)
     })
     request.write(JSON.stringify(body))
     request.end()
@@ -43,5 +49,5 @@ export async function POST(request: NextRequest, { params }: { params: { slugs: 
       reject(err)
     })
   })
-  return new Response(stream)
+  return response
 }

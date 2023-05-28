@@ -24,7 +24,7 @@ class ReqInteceptor extends RequestInterceptor {
 export class OpenaiSerivce extends ApiService {
   @Api({ url: '/v1/chat/completions', adapter: streamAdapter })
   static createChatCompletion(data, config) {
-    return this.apiCall<ReadableStream>(data, config)
+    return this.apiCall<ReadableStream<Record<string, unknown>>>(data, config)
   }
 
   @Api({ url: '/v1/images/generations' })
