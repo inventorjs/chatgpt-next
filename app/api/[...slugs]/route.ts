@@ -4,6 +4,11 @@ import { headers as NextHeders } from 'next/headers'
 
 const baseURL = 'https://api.openai.com:443/'
 
+export const config = {
+  runtime: 'edge',
+  regions: ['hkg1'],
+}
+
 export async function POST(request: NextRequest, { params }: { params: { slugs: string[] } }) {
   const { slugs } = params
   const apiPath = slugs.join('/')
