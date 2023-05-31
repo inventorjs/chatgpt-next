@@ -169,7 +169,8 @@ export function useChat() {
         }
       }
     } catch (err) {
-      const message = err?.response?.data?.error?.message ?? err?.message ?? '请求服务失败, 请稍后重试'
+      const detailMsg = err?.response?.data?.error?.message ?? err?.response?.data?.error?.code
+      const message = detailMsg ?? err?.message ?? '请求服务失败, 请稍后重试'
       let lastAnswer = nextChatList.at(-1)
       const errorItem = { role: 'assistant' as const, content: message, status: 'error' as const }
       if (!lastAnswer || lastAnswer.role !== 'assistant') {
