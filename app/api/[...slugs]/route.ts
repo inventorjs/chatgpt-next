@@ -6,7 +6,7 @@ const baseURL = 'https://api.openai.com/'
 export async function POST(request: NextRequest, { params }: { params: { slugs: string[] } }) {
   const { slugs } = params
   const apiPath = slugs.join('/')
-  const body = await request.json()
+  const body = await request.text()
   const headers = Object.fromEntries(NextHeders())
   const urlObj = new URL(`${baseURL}${apiPath}`)
   const { authorization = '', ['content-type']: contentType = 'application/json' } = headers
