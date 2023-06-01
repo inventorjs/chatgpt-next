@@ -16,8 +16,8 @@ export const imageSizeOptions = [
 ]
 
 export const netModeOptions = [
-  { value: 'direct', label: '直通模式' },
   { value: 'proxy', label: '代理模式' },
+  { value: 'direct', label: '直通模式' },
 ]
 
 
