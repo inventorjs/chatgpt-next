@@ -6,7 +6,6 @@ const baseURL = 'https://api.openai.com/'
 export async function POST(request: NextRequest, { params }: { params: { slugs: string[] } }) {
   const { slugs } = params
   const apiPath = slugs.join('/')
-  const body = await request.text()
   const headers = Object.fromEntries(NextHeders())
   const urlObj = new URL(`${baseURL}${apiPath}`)
   const { authorization = '', ['content-type']: contentType = 'application/json' } = headers
@@ -17,10 +16,10 @@ export async function POST(request: NextRequest, { params }: { params: { slugs: 
       'content-type': contentType,
       authorization,
     },
-    body,
+    body: request.body,
   })
   return response
 }
 
-// export const runtime = 'edge'
-// export const preferredRegion = ['hkg1']
+export const runtime = 'edge'
+export const preferredRegion = ['hkg1']
