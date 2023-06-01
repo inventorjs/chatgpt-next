@@ -16,7 +16,7 @@ export async function POST(request: NextRequest, { params }: { params: { slugs: 
       'content-type': contentType,
       authorization,
     },
-    body: request.body,
+    body: await request.text(),
   })
   return response
 }
