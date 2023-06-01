@@ -1,4 +1,3 @@
-import https from 'https'
 import { NextRequest } from 'next/server';
 import { headers as NextHeders } from 'next/headers'
 
@@ -23,5 +22,5 @@ export async function POST(request: NextRequest, { params }: { params: { slugs: 
   return response
 }
 
-export const runtime = 'edge'
-export const preferredRegion = ['hkg1']
+// export const runtime = 'edge'
+// export const preferredRegion = ['hkg1']
