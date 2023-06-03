@@ -21,7 +21,6 @@ import {
   ToggleButton,
   Paper,
 } from '@mui/material'
-import { styled, useTheme } from '@mui/material/styles'
 import {
   Delete as DeleteIcon,
   ChevronLeft as ChevronLeftIcon,
@@ -37,7 +36,7 @@ import { THEME_DARK } from '../../config'
 
 const drawerWith = 250
 
-function Drawer({ display, variant, open, themeMode, onClose, chatStore }) {
+function Drawer({ sx, variant, open, themeMode, onClose, chatStore }) {
   const {
     sessionId,
     sessionList,
@@ -68,9 +67,8 @@ function Drawer({ display, variant, open, themeMode, onClose, chatStore }) {
   return (
     <MuiDrawer
       sx={{
-        display,
+        ...sx,
         flexShrink: 0,
-        width: drawerWith,
         '& .MuiDrawer-paper': {
           display: 'flex',
           flexDirection: 'column',
@@ -82,7 +80,7 @@ function Drawer({ display, variant, open, themeMode, onClose, chatStore }) {
       open={open}
       onClose={onClose}
     >
-      {/* <Box
+      <Box
         sx={{
           flex: 0,
           display: 'flex',
@@ -95,7 +93,7 @@ function Drawer({ display, variant, open, themeMode, onClose, chatStore }) {
         <IconButton onClick={onClose}>
           <ChevronLeftIcon />
         </IconButton>
-      </Box> */}
+      </Box>
       <List sx={{ flex: 1, overflowY: 'auto', pt: 0 }}>
         <ListSubheader>会话列表</ListSubheader>
         <List sx={{ py: 0 }}>
@@ -160,6 +158,7 @@ function Drawer({ display, variant, open, themeMode, onClose, chatStore }) {
             {themeMode === THEME_DARK ? <DarkIcon /> : <LightIcon />}
           </IconButton>
         </Box>
+
         <ConfigForm value={config} onChange={onConfigChange} />
       </Paper>
     </MuiDrawer>
@@ -171,14 +170,33 @@ export function Sidebar(props) {
 
   return (
     <>
-      <Drawer {...props} display={{ md: 'none' }} variant="temporary" />
+      <Drawer {...props} sx={{ display: { md: 'none' } }} variant="temporary" />
       <Drawer
         {...props}
+        sx={{
+          display: { xs: 'none', md: 'block' },
+          width: drawerWith,
+          ...(!open && {
+            marginLeft: 0,
+            transition: (theme) =>
+              theme.transitions.create('margin', {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.enteringScreen,
+              }),
+          }),
+          ...(open && {
+            marginLeft: `-${drawerWith}px`,
+            transition: (theme) =>
+              theme.transitions.create('margin', {
+                easing: theme.transitions.easing.easeOut,
+                duration: theme.transitions.duration.leavingScreen,
+              }),
+          }),
+        }}
+        variant="persistent"
         open={!open}
         onOpen={onClose}
         onClose={onOpen}
-        display={{ xs: 'none', md: 'block' }}
-        variant="permanent"
       />
     </>
   )

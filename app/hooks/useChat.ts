@@ -134,6 +134,7 @@ export function useChat() {
           })),
         ]
       }, {
+        signal: refAbortController.current.signal,
         baseURL: config.netMode === 'proxy' ? '^/' : '',
         headers: {
           'authorization': `Bearer ${config.apiKey}`,
