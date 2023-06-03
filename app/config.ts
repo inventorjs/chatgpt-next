@@ -1,11 +1,11 @@
 export const gptModelOptions = [
   { value: 'gpt-3.5-turbo', label: 'GPT-3.5' },
-  { value: 'gpt-4', label: 'GPT-4.0' },
+  { value: 'gpt-4', label: 'GPT-4.0', disabled: true },
 ]
 
 export const aiModeOptions = [
   { value: 'text', label: '文本' },
-  { value: 'image', label: '图片' },
+  { value: 'image', label: '图片', disabled: true },
   { value: 'audio', label: '音频', disabled: true },
 ]
 

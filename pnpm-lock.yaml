@@ -11,8 +11,8 @@ dependencies:
     specifier: ^1.0.2
     version: 1.0.2
   '@inventorjs/axios-stream-adapter':
-    specifier: ^1.0.4
-    version: 1.0.4(axios@1.4.0)
+    specifier: ^1.0.5
+    version: 1.0.5(axios@1.4.0)
   '@mui/icons-material':
     specifier: ^5.11.16
     version: 5.11.16(@mui/material@5.13.0)(@types/react@18.2.6)(react@18.2.0)
@@ -531,8 +531,8 @@ packages:
       - debug
     dev: false
 
-  /@inventorjs/axios-stream-adapter@1.0.4(axios@1.4.0):
-    resolution: {integrity: sha512-G/9FI4e3R5l+t0nNqqqCIEtZlGPyJfOLKzjK1aX6L612iXAOeR6IdPaFxCBh2yBFdb8uflXMU41tsTYiEpDEQA==}
+  /@inventorjs/axios-stream-adapter@1.0.5(axios@1.4.0):
+    resolution: {integrity: sha512-JNrvEye2jqazeP4LEqOr9CbjobgdqtoLnk8e4aJ8V9rzDlmfLeG4eFMqhaATvL2CuBNQB2LywTcP/W3MYdwQ1w==}
     peerDependencies:
       axios: ^1.4.0
     dependencies:

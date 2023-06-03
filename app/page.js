@@ -28,7 +28,7 @@ export default function Home() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex', bgcolor: 'background.default' }}>
         <Box sx={{ flex: 0 }}>
           <Sidebar
             open={open}
@@ -39,7 +39,7 @@ export default function Home() {
           />
         </Box>
         <Box sx={{ flex: 1 }}>
-          <Main open={open}>
+          <Main chatStore={chatStore}>
             <AppBar
               chatStore={chatStore}
               open={open}

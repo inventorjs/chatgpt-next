@@ -63,12 +63,17 @@ export const Sender = ({
         bgcolor: 'background.paper',
         borderTop: '1px solid #ccc',
         borderColor: 'divider',
-        py: (theme) => theme.spacing(2),
-        my: (theme) => theme.spacing(2),
+        pb: (theme) => theme.spacing(3),
+        my: (theme) => theme.spacing(3),
         mb: 0,
       }}
     >
-      <Container maxWidth="md">
+      <Container
+        maxWidth="md"
+        sx={{
+          pb: 'env(safe-area-inset-bottom)',
+        }}
+      >
         {hasChatList && (
           <Box
             sx={{
@@ -81,7 +86,11 @@ export const Sender = ({
               <Button
                 variant="outlined"
                 onClick={onAbort}
-                sx={{ borderColor: 'action.selected', bgcolor: 'action.hover', color: 'text.secondary' }}
+                sx={{
+                  borderColor: 'action.selected',
+                  bgcolor: 'action.hover',
+                  color: 'text.secondary',
+                }}
               >
                 <StopIcon />
                 停止响应
@@ -90,7 +99,11 @@ export const Sender = ({
               <Button
                 variant="outlined"
                 onClick={onReAnswer}
-                sx={{ borderColor: 'action.selected', bgcolor: 'action.hover', color: 'text.secondary' }}
+                sx={{
+                  borderColor: 'action.selected',
+                  bgcolor: 'action.hover',
+                  color: 'text.secondary',
+                }}
               >
                 <ReplayIcon />
                 重新生成响应
