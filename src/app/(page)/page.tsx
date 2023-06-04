@@ -13,7 +13,7 @@ import { ChatList } from './components/ChatList'
 import { Sender } from './components/Sender'
 import * as services from './services/api-service'
 
-ApiService.init({ services })
+ApiService.init({ services, config: { timeout: 30000 } })
 
 export default function Home() {
   const [open, setOpen] = useState(false)

@@ -1,17 +1,11 @@
+import type { ChatStore } from '@/types'
+
 import { useRef } from 'react'
-import {
-  Box,
-  Container,
-  Paper,
-  InputBase,
-  IconButton,
-  Button,
-} from '@mui/material'
+import { Box, Container, Paper, InputBase, IconButton } from '@mui/material'
 import {
   Send as SendIcon,
   Replay as ReplayIcon,
   Stop as StopIcon,
-  CleaningServices as CleaningServicesIcon,
 } from '@mui/icons-material'
 
 export const Sender = ({
@@ -24,7 +18,9 @@ export const Sender = ({
     onAbort,
     onReAnswer,
   },
-}: any) => {
+}: {
+  chatStore: ChatStore
+}) => {
   const refShiftDown = useRef(false)
   const refInput = useRef()
 
@@ -81,7 +77,7 @@ export const Sender = ({
             my: (theme) => theme.spacing(1),
           }}
         >
-          {!isProcessing  && hasChat && (
+          {!isProcessing && hasChat && (
             <IconButton disabled={!hasChat} onClick={onReAnswer}>
               <ReplayIcon />
             </IconButton>

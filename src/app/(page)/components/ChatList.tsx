@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import type { ChatStore, ChatItem as ChatItemType, Config } from '@/types'
 import {
   Box,
   List,
@@ -10,7 +10,7 @@ import {
 } from '@mui/material'
 import ReactMarkdown from 'react-markdown'
 
-function ChatItem({ item, config }: any) {
+function ChatItem({ item, config }: { item: ChatItemType, config: Config }) {
   return (
     <ListItem
       sx={{
@@ -31,13 +31,11 @@ function ChatItem({ item, config }: any) {
         <ListItemText
           sx={{
             color: 'text.primary',
-            '& *': {
+            '& pre': {
               whiteSpace: 'pre-wrap',
               overflowWrap: 'anywhere',
-            },
-            '& pre': {
               color: (theme) =>
-                ['error', 'cancel'].includes(item.status)
+                ['error', 'cancel'].includes(item?.status ?? '')
                   ? `error.${theme.palette.mode}`
                   : 'grey.50',
               bgcolor: 'grey.900',
@@ -59,41 +57,13 @@ function ChatItem({ item, config }: any) {
   )
 }
 
-export const ChatList = ({ chatStore: { session, isWaiting, config } }: any) => {
-  const [thinkCount, setThinkCount] = useState(0)
-  const thinkRef = useRef(false)
-
-  useEffect(() => {
-    function think() {
-      setThinkCount((c) => (c + 1) % 4)
-      if (thinkRef.current) {
-        setTimeout(think, 300)
-      }
-    }
-    if (isWaiting) {
-      thinkRef.current = true
-      think()
-    } else {
-      thinkRef.current = false
-      setThinkCount(0)
-    }
-  }, [isWaiting])
-
+export const ChatList = ({ chatStore: { session, config } }: { chatStore: ChatStore }) => {
   return (
     <Box sx={{ flex: 1 }}>
       <List sx={{ pt: 0 }}>
         {session?.chatList?.map((item: any, index: any) => (
           <ChatItem key={index} item={item} config={config} />
         ))}
-        {isWaiting && (
-          <ChatItem
-            key={session?.chatList?.length}
-            item={{
-              role: 'assistant',
-              content: `思考中${'.'.repeat(thinkCount)}`,
-            }}
-          />
-        )}
       </List>
     </Box>
   )

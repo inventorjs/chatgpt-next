@@ -1,6 +1,8 @@
 /**
  * 聊天交互 hooks
  */
+import type { SessionItem, ChatItem, Config, ChatStore } from '@/types'
+
 import { useEffect, useRef, useState, useMemo } from 'react'
 import { produce } from 'immer'
 import { OpenaiSerivce } from '../services/api-service';
@@ -16,28 +18,13 @@ import {
 } from '../config'
 import { AxiosError } from 'axios';
 
-
-interface ChatItem {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  status?: 'error' | 'answer' | 'cancel';
-}
-
-interface SessionItem {
-  id: string
-  title: string,
-  chatList: ChatItem[]
-  createdAt: number,
-}
-
-export function useChat() {
+export function useChat(): ChatStore {
   const [content, setContent] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
-  const [isWaiting, setIsWaiting] = useState(false)
   const [isSessionEdit, setIsSessionEdit] = useState(false)
   const [sessionList, setSessionList] = useState<SessionItem[]>([])
   const [sessionId, setSessionId] = useState<string>()
-  const [config, setConfig] = useState({
+  const [config, setConfig] = useState<Config>({
     themeMode: THEME_DARK,
     netMode: netModeOptions[0].value,
     aiMode: aiModeOptions[0].value,
@@ -73,7 +60,7 @@ export function useChat() {
 
   useEffect(() => {
     if (initRef.current) {
-      Storage.setConfig(config)
+      Storage.saveConfig(config)
     }
   }, [config])
 
@@ -82,6 +69,43 @@ export function useChat() {
       const session = sessionList.find((session) => session.id === sessionId)
       return session
     }, [sessionList, sessionId])
+  const sessionIndex = useMemo(() => {
+    const sessionIndex = sessionList.findIndex((session) => session.id === sessionId)
+    return sessionIndex
+  }, [sessionList, sessionId])
+
+  const startThink = (sessionList: SessionItem[], sessionIndex: number) => {
+    let isStoped = false
+    let thinkCount = 0
+    const session = sessionList[sessionIndex]
+    const chatList = produce(session?.chatList ?? [], (draft: ChatItem[]) => {
+      draft.push({
+        role: 'assistant',
+        content: '思考中',
+        status: 'think',
+      })
+    })
+    const thinkIndex = chatList.length - 1
+
+    function think() {
+      if (isStoped) return
+      const nextChatList = produce(chatList, (draft) => {
+        draft[thinkIndex].content = `思考中${'.'.repeat(thinkCount)}`
+      })
+      setSessionList(produce(sessionList, (draft) => {
+        draft[sessionIndex].chatList = nextChatList
+      }))
+      thinkCount = (thinkCount + 1) % 4
+      setTimeout(think, 300);
+    }
+
+    think()
+
+    return () => {
+      isStoped = true
+      thinkCount = 0
+    }
+  }
 
   const send = async (content: string, resend = false) => {
     const sendContent = content.trim()
@@ -92,10 +116,10 @@ export function useChat() {
     const userItem: ChatItem = { role: 'user', content }
     let nextSessionList: SessionItem[]
     let nextChatList: ChatItem[]
-    let sessionIndex = sessionList.findIndex((session) => session.id === sessionId)
-    if (!~sessionIndex) {
+    let nextSessionIndex = sessionIndex
+    if (!~nextSessionIndex) {
       nextChatList = [userItem]
-      sessionIndex = 0
+      nextSessionIndex = 0
       const id = String(Math.random())
       const newSession = {
         id,
@@ -108,22 +132,22 @@ export function useChat() {
     } else {
       nextSessionList = produce(sessionList, (draft) => {
         if (resend) {
-          const chatList = draft[sessionIndex].chatList
+          const chatList = draft[nextSessionIndex].chatList
           chatList.splice(chatList.length - 1, 1)
         } else {
-          if (draft[sessionIndex].title === DEFAULT_SESSION_NAME) {
+          if (draft[nextSessionIndex].title === DEFAULT_SESSION_NAME) {
             draft[sessionIndex].title = sendContent
           }
-          draft[sessionIndex].chatList.push(userItem)
+          draft[nextSessionIndex].chatList.push(userItem)
         }
       })
-      nextChatList = nextSessionList[sessionIndex].chatList
+      nextChatList = nextSessionList[nextSessionIndex].chatList
     }
 
     setSessionList(nextSessionList)
     setContent('')
-    setIsWaiting(true)
     setIsProcessing(true)
+    const stopThink = startThink(nextSessionList, nextSessionIndex)
     cancelRef.current = false
     refAbortController.current = new AbortController()
     try {
@@ -144,7 +168,7 @@ export function useChat() {
         },
       })
 
-      setIsWaiting(false)
+      stopThink()
 
       const reader = data.getReader()
       while (true) {
@@ -154,31 +178,37 @@ export function useChat() {
         if (content) {
           const lastAnswer = nextChatList.at(-1)
           let answerContent = lastAnswer?.content
-          if (lastAnswer?.status !== 'answer') {
+          if (lastAnswer?.status !== 'answer' || lastAnswer?.role !== 'assistant') {
             answerContent = ''
           }
-          const nextItem = { role: 'assistant' as const, content: answerContent + content, status: 'answer' as const }
+          const nextContent = answerContent + content
+          const nextChatItem = {
+            role: 'assistant' as const,
+            content: nextContent,
+            status: 'answer' as const,
+          }
           if (lastAnswer?.role !== 'assistant') {
             nextChatList = produce(nextChatList, (draft) => {
-              draft.push(nextItem)
+              draft.push(nextChatItem)
             })
           } else {
             nextChatList = produce(nextChatList, (draft) => {
-              draft.splice(draft.length - 1, 1, nextItem)
+              draft[draft.length - 1] = nextChatItem
             })
           }
           setSessionList(produce(nextSessionList, (draft) => {
-            draft[sessionIndex].chatList = nextChatList
+            draft[nextSessionIndex].chatList = nextChatList
           }))
         }
       }
     } catch (err) {
+      stopThink()
       if (cancelRef.current) {
         nextChatList = produce(nextChatList, (draft) => {
-          draft[draft['length'] - 1].status = 'cancel'
+          draft[draft.length - 1].status = 'cancel'
         })
       } else {
-        const resError = err as AxiosError<{error: { message: string, code: string } }>
+        const resError = err as AxiosError<{ error: { message: string, code: string } }>
         const error = err as Error
         const detailMsg = resError?.response?.data?.error?.message ?? resError?.response?.data?.error?.code
         const message = detailMsg ?? error?.message ?? '请求服务失败, 请稍后重试'
@@ -190,16 +220,15 @@ export function useChat() {
           })
         } else {
           nextChatList = produce(nextChatList, (draft) => {
-            draft.splice(draft.length - 1, 1, errorItem)
+            draft[draft.length - 1] = errorItem
           })
         }
       }
       setSessionList(produce(nextSessionList, (draft) => {
-        draft[sessionIndex].chatList = nextChatList
+        draft[nextSessionIndex].chatList = nextChatList
       }))
     } finally {
       setIsProcessing(false)
-      setIsWaiting(false)
     }
   }
 
@@ -223,7 +252,7 @@ export function useChat() {
     const id = String(Math.random())
     const newSession = {
       id,
-      title: '新会话',
+      title: DEFAULT_SESSION_NAME,
       chatList: [],
       createdAt: Date.now()
     }
@@ -274,7 +303,6 @@ export function useChat() {
     content,
     config,
     isProcessing,
-    isWaiting,
     isSessionEdit,
     onChange,
     onSend,
