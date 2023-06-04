@@ -9,7 +9,7 @@ import {
   MoreHoriz as MoreHorizIcon,
 } from '@mui/icons-material'
 
-const AppBarMain = ({ open, sx, chatStore: { session }, onOpen, onClose }) => (
+const AppBarMain = ({ open, sx, chatStore: { session }, onOpen }) => (
   <MuiAppBar
     sx={{
       ...sx,

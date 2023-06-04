@@ -27,7 +27,6 @@ import { THEME_DARK, DRAWER_WIDTH } from '../../config'
 
 function Drawer({ sx, variant, open, themeMode, onClose, chatStore }) {
   const {
-    sessionId,
     session,
     sessionList,
     isSessionEdit,
@@ -101,13 +100,13 @@ function Drawer({ sx, variant, open, themeMode, onClose, chatStore }) {
       <List sx={{ flex: 1, overflowY: 'auto', pt: 0 }}>
         <ListSubheader>会话列表</ListSubheader>
         <List sx={{ py: 0 }}>
-          {sessionList.map((session, index) => (
+          {sessionList.map((item, index) => (
             <ListItem
               disablePadding
               key={index}
-              onClick={() => onSessionChange(session.id)}
+              onClick={() => onSessionChange(item.id)}
               secondaryAction={
-                session.id === sessionId && (
+                item.id === session?.id && (
                   <>
                     {isSessionEdit ? (
                       <IconButton onClick={onSessionEditFinish}>
@@ -125,19 +124,19 @@ function Drawer({ sx, variant, open, themeMode, onClose, chatStore }) {
                 )
               }
             >
-              <ListItemButton selected={session.id === sessionId}>
+              <ListItemButton selected={item.id === session?.id}>
                 <ListItemIcon sx={{ minWidth: 32 }}>
                   <SpeakerNotesIcon fontSize="small" />
                 </ListItemIcon>
-                {isSessionEdit && session.id === sessionId ? (
+                {isSessionEdit && item.id === session?.id ? (
                   <InputBase
                     inputRef={inputRef}
-                    value={session.title}
+                    value={item.title}
                     onChange={(e) => onSessionTitleChange(e.target.value)}
                     onKeyUp={handleKeyUp}
                   />
                 ) : (
-                  <ListItemText primary={session.title} />
+                  <ListItemText primary={item.title} />
                 )}
               </ListItemButton>
             </ListItem>

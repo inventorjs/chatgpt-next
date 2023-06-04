@@ -16,8 +16,6 @@ import {
   netModeOptions,
 } from '../../config'
 
-const drawerWith = 250
-
 export function ConfigForm({ value, onChange }) {
   const { control, watch } = useForm({
     values: value,

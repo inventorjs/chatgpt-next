@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { Chat } from '@mui/icons-material'
 import {
   Box,
   List,
@@ -11,7 +10,7 @@ import {
 } from '@mui/material'
 import ReactMarkdown from 'react-markdown'
 
-function ChatItem({ item }) {
+function ChatItem({ item, config }) {
   return (
     <ListItem
       sx={{
@@ -27,7 +26,7 @@ function ChatItem({ item }) {
     >
       <Container sx={{ display: 'flex' }} disableGutters maxWidth="md">
         <ListItemAvatar>
-          <Avatar src={item.role !== 'user' ? `/${item.role}.png` : ''} />
+          <Avatar src={item.role === 'assistant' ? `/${config.gptModel}.png` : ''} />
         </ListItemAvatar>
         <ListItemText
           sx={{
@@ -38,7 +37,7 @@ function ChatItem({ item }) {
             },
             '& pre': {
               color: (theme) =>
-                item.status === 'error'
+                ['error', 'cancel'].includes(item.status)
                   ? `error.${theme.palette.mode}`
                   : 'grey.50',
               bgcolor: 'grey.900',
@@ -53,14 +52,14 @@ function ChatItem({ item }) {
           ) : (
             <ReactMarkdown>{item.content}</ReactMarkdown>
           )}
+          {item.status === 'cancel' && <pre>User stop the answer</pre>}
         </ListItemText>
       </Container>
     </ListItem>
   )
 }
 
-export const ChatList = ({ chatStore: { session, isWaiting } }) => {
-  const chatList = session?.chatList ?? []
+export const ChatList = ({ chatStore: { session, isWaiting, config } }) => {
   const [thinkCount, setThinkCount] = useState(0)
   const thinkRef = useRef(false)
 
@@ -83,12 +82,12 @@ export const ChatList = ({ chatStore: { session, isWaiting } }) => {
   return (
     <Box sx={{ flex: 1 }}>
       <List sx={{ pt: 0 }}>
-        {chatList.map((item, index) => (
-          <ChatItem key={index} item={item} />
+        {session?.chatList?.map((item, index) => (
+          <ChatItem key={index} item={item} config={config} />
         ))}
         {isWaiting && (
           <ChatItem
-            key={chatList.length}
+            key={session?.chatList?.length}
             item={{
               role: 'assistant',
               content: `思考中${'.'.repeat(thinkCount)}`,

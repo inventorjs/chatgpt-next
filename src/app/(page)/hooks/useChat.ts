@@ -19,7 +19,7 @@ import {
 interface ChatItem {
   role: 'user' | 'assistant' | 'system';
   content: string;
-  status?: 'error' | 'answer';
+  status?: 'error' | 'answer' | 'cancel';
 }
 
 interface SessionItem {
@@ -45,6 +45,7 @@ export function useChat() {
     apiKey: '',
   })
   const initRef = useRef(false)
+  const cancelRef = useRef(false)
   const refAbortController = useRef<AbortController>()
 
   useEffect(() => {
@@ -122,6 +123,7 @@ export function useChat() {
     setContent('')
     setIsWaiting(true)
     setIsProcessing(true)
+    cancelRef.current = false
     refAbortController.current = new AbortController()
     try {
       const data = await OpenaiSerivce.createChatCompletion({
@@ -170,18 +172,24 @@ export function useChat() {
         }
       }
     } catch (err) {
-      const detailMsg = err?.response?.data?.error?.message ?? err?.response?.data?.error?.code
-      const message = detailMsg ?? err?.message ?? '请求服务失败, 请稍后重试'
-      let lastAnswer = nextChatList.at(-1)
-      const errorItem = { role: 'assistant' as const, content: message, status: 'error' as const }
-      if (!lastAnswer || lastAnswer.role !== 'assistant') {
+      if (cancelRef.current) {
         nextChatList = produce(nextChatList, (draft) => {
-          draft.push(errorItem)
+          draft[draft['length'] - 1].status = 'cancel'
         })
       } else {
-        nextChatList = produce(nextChatList, (draft) => {
-          draft.splice(draft.length - 1, 1, errorItem)
-        })
+        const detailMsg = err?.response?.data?.error?.message ?? err?.response?.data?.error?.code
+        const message = detailMsg ?? err?.message ?? '请求服务失败, 请稍后重试'
+        let lastAnswer = nextChatList.at(-1)
+        const errorItem = { role: 'assistant' as const, content: message, status: 'error' as const }
+        if (!lastAnswer || lastAnswer.role !== 'assistant') {
+          nextChatList = produce(nextChatList, (draft) => {
+            draft.push(errorItem)
+          })
+        } else {
+          nextChatList = produce(nextChatList, (draft) => {
+            draft.splice(draft.length - 1, 1, errorItem)
+          })
+        }
       }
       setSessionList(produce(nextSessionList, (draft) => {
         draft[sessionIndex].chatList = nextChatList
@@ -200,6 +208,7 @@ export function useChat() {
 
   const onAbort = () => {
     setIsProcessing(false)
+    cancelRef.current = true
     refAbortController.current?.abort()
   }
 
@@ -257,7 +266,6 @@ export function useChat() {
   })
 
   return {
-    sessionId,
     session,
     sessionList,
     content,

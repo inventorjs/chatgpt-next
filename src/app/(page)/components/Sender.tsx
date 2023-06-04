@@ -16,9 +16,9 @@ import {
 
 export const Sender = ({
   chatStore: {
+    session,
     content,
     isProcessing,
-    session,
     onSend,
     onChange,
     onAbort,
@@ -52,7 +52,7 @@ export const Sender = ({
     onChange(e.target.value)
   }
 
-  const hasChatList = session?.chatList?.length > 0
+  const hasChat = session?.chatList?.length > 0
 
   return (
     <Box
@@ -81,12 +81,8 @@ export const Sender = ({
             my: (theme) => theme.spacing(1),
           }}
         >
-          {isProcessing ? (
-            <IconButton disabled={!hasChatList} onClick={onAbort}>
-              <StopIcon />
-            </IconButton>
-          ) : (
-            <IconButton disabled={!hasChatList} onClick={onReAnswer}>
+          {!isProcessing  && hasChat && (
+            <IconButton disabled={!hasChat} onClick={onReAnswer}>
               <ReplayIcon />
             </IconButton>
           )}
@@ -95,17 +91,24 @@ export const Sender = ({
             sx={{ flex: 1, px: 1 }}
             multiline
             maxRows={3}
+            inputProps={{ enterKeyHint: '发送' }}
             value={content}
             onChange={handleChange}
             onKeyUp={handleKeyup}
             onKeyDown={handleKeydown}
           />
-          <IconButton
-            disabled={!content.trim() || isProcessing}
-            onClick={onSend}
-          >
-            <SendIcon />
-          </IconButton>
+          {isProcessing ? (
+            <IconButton disabled={!hasChat} onClick={onAbort}>
+              <StopIcon />
+            </IconButton>
+          ) : (
+            <IconButton
+              disabled={!content.trim() || isProcessing}
+              onClick={onSend}
+            >
+              <SendIcon />
+            </IconButton>
+          )}
         </Paper>
       </Container>
     </Box>
