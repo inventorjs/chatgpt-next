@@ -17,10 +17,12 @@ export const imageSizeOptions = [
 
 export const netModeOptions = [
   { value: 'proxy', label: '代理模式' },
-  { value: 'direct', label: '直通模式' },
+  { value: 'direct', label: '直通模式', disabled: false },
 ]
 
 
 export const THEME_DARK = 'dark'
 export const THEME_LIGHT = 'light'
 export const DEFAULT_SESSION_NAME = '新会话'
+
+export const DRAWER_WIDTH = 250

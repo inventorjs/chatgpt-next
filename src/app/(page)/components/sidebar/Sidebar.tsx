@@ -8,18 +8,10 @@ import {
   ListItemText,
   ListSubheader,
   IconButton,
-  Divider,
-  Button,
   Box,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  TextField,
   InputBase,
-  ToggleButtonGroup,
-  ToggleButton,
   Paper,
+  Button,
 } from '@mui/material'
 import {
   Delete as DeleteIcon,
@@ -27,30 +19,28 @@ import {
   Edit as EditIcon,
   Save as SaveIcon,
   SpeakerNotes as SpeakerNotesIcon,
-  CancelPresentation as CancelPresentationIcon,
   Brightness2 as DarkIcon,
   LightMode as LightIcon,
 } from '@mui/icons-material'
 import { ConfigForm } from './ConfigForm'
-import { THEME_DARK } from '../../config'
-
-const drawerWith = 250
+import { THEME_DARK, DRAWER_WIDTH } from '../../config'
 
 function Drawer({ sx, variant, open, themeMode, onClose, chatStore }) {
   const {
-    sessionId,
+    session,
     sessionList,
     isSessionEdit,
     config,
     onConfigChange,
     onSessionChange,
     onSessionRemove,
+    onSessionAdd,
     onSessionEdit,
     onSessionEditFinish,
     onSessionTitleChange,
     onThemeModeSwitch,
   } = chatStore
-  const inputRef = useRef()
+  const inputRef = useRef<HTMLInputElement>()
 
   useEffect(() => {
     if (isSessionEdit && inputRef.current) {
@@ -72,7 +62,8 @@ function Drawer({ sx, variant, open, themeMode, onClose, chatStore }) {
         '& .MuiDrawer-paper': {
           display: 'flex',
           flexDirection: 'column',
-          width: drawerWith,
+          width: DRAWER_WIDTH,
+          position: 'absolute',
         },
       }}
       variant={variant}
@@ -82,14 +73,26 @@ function Drawer({ sx, variant, open, themeMode, onClose, chatStore }) {
     >
       <Box
         sx={{
-          flex: 0,
           display: 'flex',
-          justifyContent: 'flex-end',
           alignItems: 'center',
           flex: 'none',
           height: 64,
         }}
       >
+        <Button
+          variant="outlined"
+          fullWidth
+          sx={{
+            flex: 1,
+            color: 'text.primary',
+            borderColor: 'text.primary',
+            marginLeft: (theme) => theme.spacing(2),
+          }}
+          disabled={!session?.chatList?.length}
+          onClick={onSessionAdd}
+        >
+          新建会话
+        </Button>
         <IconButton onClick={onClose}>
           <ChevronLeftIcon />
         </IconButton>
@@ -97,13 +100,13 @@ function Drawer({ sx, variant, open, themeMode, onClose, chatStore }) {
       <List sx={{ flex: 1, overflowY: 'auto', pt: 0 }}>
         <ListSubheader>会话列表</ListSubheader>
         <List sx={{ py: 0 }}>
-          {sessionList.map((session, index) => (
+          {sessionList.map((item, index) => (
             <ListItem
               disablePadding
               key={index}
-              onClick={() => onSessionChange(session.id)}
+              onClick={() => onSessionChange(item.id)}
               secondaryAction={
-                session.id === sessionId && (
+                item.id === session?.id && (
                   <>
                     {isSessionEdit ? (
                       <IconButton onClick={onSessionEditFinish}>
@@ -121,19 +124,19 @@ function Drawer({ sx, variant, open, themeMode, onClose, chatStore }) {
                 )
               }
             >
-              <ListItemButton selected={session.id === sessionId}>
+              <ListItemButton selected={item.id === session?.id}>
                 <ListItemIcon sx={{ minWidth: 32 }}>
                   <SpeakerNotesIcon fontSize="small" />
                 </ListItemIcon>
-                {isSessionEdit && session.id === sessionId ? (
+                {isSessionEdit && item.id === session?.id ? (
                   <InputBase
                     inputRef={inputRef}
-                    value={session.title}
+                    value={item.title}
                     onChange={(e) => onSessionTitleChange(e.target.value)}
                     onKeyUp={handleKeyUp}
                   />
                 ) : (
-                  <ListItemText primary={session.title} />
+                  <ListItemText primary={item.title} />
                 )}
               </ListItemButton>
             </ListItem>
@@ -175,17 +178,19 @@ export function Sidebar(props) {
         {...props}
         sx={{
           display: { xs: 'none', md: 'block' },
-          width: drawerWith,
+          width: DRAWER_WIDTH,
+          height: '100%',
+          position: 'relative',
           ...(!open && {
             marginLeft: 0,
             transition: (theme) =>
               theme.transitions.create('margin', {
-                easing: theme.transitions.easing.sharp,
+                easing: theme.transitions.easing.easeIn,
                 duration: theme.transitions.duration.enteringScreen,
               }),
           }),
           ...(open && {
-            marginLeft: `-${drawerWith}px`,
+            marginLeft: `-${DRAWER_WIDTH}px`,
             transition: (theme) =>
               theme.transitions.create('margin', {
                 easing: theme.transitions.easing.easeOut,
@@ -193,7 +198,7 @@ export function Sidebar(props) {
               }),
           }),
         }}
-        variant="persistent"
+        variant="permanent"
         open={!open}
         onOpen={onClose}
         onClose={onOpen}

@@ -1,8 +1,4 @@
 import {
-  IconButton,
-  Divider,
-  Button,
-  Box,
   Select,
   MenuItem,
   FormControl,
@@ -20,10 +16,8 @@ import {
   netModeOptions,
 } from '../../config'
 
-const drawerWith = 250
-
 export function ConfigForm({ value, onChange }) {
-  const { control, getValues, watch, setValue } = useForm({
+  const { control, watch } = useForm({
     values: value,
   })
 
