@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react'
 import { Box } from '@mui/material'
 
-export function Main({ children, chatStore: { session } }) {
+export function Main({ children, chatStore: { session } }: any) {
   const refMain = useRef<HTMLDivElement>()
   const refAutoButtom = useRef(true)
   const refScrollTop = useRef(0)

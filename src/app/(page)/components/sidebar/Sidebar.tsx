@@ -25,7 +25,7 @@ import {
 import { ConfigForm } from './ConfigForm'
 import { THEME_DARK, DRAWER_WIDTH } from '../../config'
 
-function Drawer({ sx, variant, open, themeMode, onClose, chatStore }) {
+function Drawer({ sx, variant, open, themeMode, onClose, chatStore }: any) {
   const {
     session,
     sessionList,
@@ -48,7 +48,7 @@ function Drawer({ sx, variant, open, themeMode, onClose, chatStore }) {
     }
   }, [isSessionEdit])
 
-  const handleKeyUp = (e) => {
+  const handleKeyUp = (e: any) => {
     if (e.keyCode === 13) {
       onSessionEditFinish()
     }
@@ -100,7 +100,7 @@ function Drawer({ sx, variant, open, themeMode, onClose, chatStore }) {
       <List sx={{ flex: 1, overflowY: 'auto', pt: 0 }}>
         <ListSubheader>会话列表</ListSubheader>
         <List sx={{ py: 0 }}>
-          {sessionList.map((item, index) => (
+          {sessionList.map((item: any, index: any) => (
             <ListItem
               disablePadding
               key={index}
@@ -168,7 +168,7 @@ function Drawer({ sx, variant, open, themeMode, onClose, chatStore }) {
   )
 }
 
-export function Sidebar(props) {
+export function Sidebar(props: any) {
   const { open, onClose, onOpen } = props
 
   return (
@@ -183,7 +183,7 @@ export function Sidebar(props) {
           position: 'relative',
           ...(!open && {
             marginLeft: 0,
-            transition: (theme) =>
+            transition: (theme: any) =>
               theme.transitions.create('margin', {
                 easing: theme.transitions.easing.easeIn,
                 duration: theme.transitions.duration.enteringScreen,
@@ -191,7 +191,7 @@ export function Sidebar(props) {
           }),
           ...(open && {
             marginLeft: `-${DRAWER_WIDTH}px`,
-            transition: (theme) =>
+            transition: (theme: any) =>
               theme.transitions.create('margin', {
                 easing: theme.transitions.easing.easeOut,
                 duration: theme.transitions.duration.leavingScreen,

@@ -24,17 +24,17 @@ export const Sender = ({
     onAbort,
     onReAnswer,
   },
-}) => {
+}: any) => {
   const refShiftDown = useRef(false)
   const refInput = useRef()
 
-  const handleKeydown = (e) => {
+  const handleKeydown = (e: any) => {
     if (e.keyCode === 16) {
       refShiftDown.current = true
     }
   }
 
-  const handleKeyup = (e) => {
+  const handleKeyup = (e: any) => {
     if (e.keyCode === 16) {
       refShiftDown.current = false
     }
@@ -44,7 +44,7 @@ export const Sender = ({
     }
   }
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     if (e.target.value.endsWith('\n') && !refShiftDown.current) {
       e.preventDefault()
       return false

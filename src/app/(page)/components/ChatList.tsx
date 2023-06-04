@@ -10,7 +10,7 @@ import {
 } from '@mui/material'
 import ReactMarkdown from 'react-markdown'
 
-function ChatItem({ item, config }) {
+function ChatItem({ item, config }: any) {
   return (
     <ListItem
       sx={{
@@ -59,7 +59,7 @@ function ChatItem({ item, config }) {
   )
 }
 
-export const ChatList = ({ chatStore: { session, isWaiting, config } }) => {
+export const ChatList = ({ chatStore: { session, isWaiting, config } }: any) => {
   const [thinkCount, setThinkCount] = useState(0)
   const thinkRef = useRef(false)
 
@@ -82,7 +82,7 @@ export const ChatList = ({ chatStore: { session, isWaiting, config } }) => {
   return (
     <Box sx={{ flex: 1 }}>
       <List sx={{ pt: 0 }}>
-        {session?.chatList?.map((item, index) => (
+        {session?.chatList?.map((item: any, index: any) => (
           <ChatItem key={index} item={item} config={config} />
         ))}
         {isWaiting && (

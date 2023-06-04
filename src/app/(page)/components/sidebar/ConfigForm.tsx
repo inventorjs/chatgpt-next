@@ -7,7 +7,7 @@ import {
   ToggleButtonGroup,
   ToggleButton,
 } from '@mui/material'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type FieldValues } from 'react-hook-form'
 
 import {
   gptModelOptions,
@@ -16,14 +16,20 @@ import {
   netModeOptions,
 } from '../../config'
 
-export function ConfigForm({ value, onChange }) {
+export function ConfigForm({
+  value,
+  onChange,
+}: {
+  value: FieldValues
+  onChange: (v: FieldValues) => void
+}) {
   const { control, watch } = useForm({
     values: value,
   })
 
   const aiMode = watch('aiMode')
 
-  const handleChange = (fieldValues) => {
+  const handleChange = (fieldValues: FieldValues) => {
     onChange(fieldValues)
   }
 
@@ -38,7 +44,7 @@ export function ConfigForm({ value, onChange }) {
               size="small"
               fullWidth
               value={value}
-              onChange={(e) => handleChange({ netMode: e.target.value })}
+              onChange={(e) => handleChange({ netMode: (e.target as any).value })}
             >
               {netModeOptions.map((item) => (
                 <ToggleButton
@@ -62,7 +68,7 @@ export function ConfigForm({ value, onChange }) {
               size="small"
               fullWidth
               value={value}
-              onChange={(e) => handleChange({ aiMode: e.target.value })}
+              onChange={(e) => handleChange({ aiMode: (e.target as any).value })}
             >
               {aiModeOptions.map((item) => (
                 <ToggleButton
@@ -117,11 +123,7 @@ export function ConfigForm({ value, onChange }) {
                   onChange={(e) => handleChange({ imageSize: e.target.value })}
                 >
                   {imageSizeOptions.map((item) => (
-                    <MenuItem
-                      key={item.value}
-                      value={item.value}
-                      disabled={item.disabled}
-                    >
+                    <MenuItem key={item.value} value={item.value}>
                       {item.label}
                     </MenuItem>
                   ))}
