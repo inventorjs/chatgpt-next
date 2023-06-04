@@ -5,7 +5,7 @@ const CONFIG_KEY = 'inventorjs/chatgpt-config'
 const SESSION_KEY = 'inventorjs/chatgpt-session'
 
 export class Storage {
-  static safeJsonParse(jsonStr) {
+  static safeJsonParse(jsonStr: any) {
     try {
       return JSON.parse(jsonStr)
     } catch (err) {
@@ -18,12 +18,12 @@ export class Storage {
     return data
   }
 
-  static async setConfig(config) {
+  static async setConfig(config: any) {
     const configData = JSON.stringify(config) 
     localStorage.setItem(CONFIG_KEY, configData)
   }
 
-  static async addSession(sessionItem) {
+  static async addSession(sessionItem: any) {
     let sessionList = await this.getSessionList()
     if (!sessionList) {
       sessionList = []
@@ -32,18 +32,18 @@ export class Storage {
     return this.saveSessionList(sessionList)
   }
 
-  static async deleteSession(sessionId) {
+  static async deleteSession(sessionId: any) {
     const sessionList = await this.getSessionList()
     if (sessionList) {
-      const index = sessionList.findIndex((item) => item.id === sessionId)
+      const index = sessionList.findIndex((item: any) => item.id === sessionId)
       sessionList.splice(index, 1)
       return this.saveSessionList(sessionList)
     }
   }
 
-  static async getSession(sessionId) {
+  static async getSession(sessionId: any) {
     const sessionList = await this.getSessionList()
-    const session = sessionList?.find((item) => item.id === sessionId)
+    const session = sessionList?.find((item: any) => item.id === sessionId)
     return session
   }
 
@@ -52,7 +52,7 @@ export class Storage {
     return sessionList
   }
 
-  static async saveSessionList(sessionList) {
+  static async saveSessionList(sessionList: any) {
     const sessionData = JSON.stringify(sessionList)
     localStorage.setItem(SESSION_KEY, sessionData)
   }

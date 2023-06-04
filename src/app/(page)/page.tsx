@@ -1,28 +1,28 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import type { PaletteMode } from '@mui/material'
+import { useState } from 'react'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { ApiService } from '@inventorjs/api-service'
 import { useChat } from './hooks/useChat'
 import { Sidebar } from './components/sidebar/Sidebar'
-import { Box, CssBaseline } from '@mui/material'
+import { Box } from '@mui/material'
 import { AppBar } from './components/AppBar'
 import { Main } from './components/Main'
 import { ChatList } from './components/ChatList'
 import { Sender } from './components/Sender'
 import * as services from './services/api-service'
 
-!ApiService.inited && ApiService.init({ services })
+ApiService.init({ services })
 
 export default function Home() {
   const [open, setOpen] = useState(false)
   const chatStore = useChat()
-  const refMain = useRef()
   const { config } = chatStore
 
   const theme = createTheme({
     palette: {
-      mode: config.themeMode,
+      mode: config.themeMode as PaletteMode,
     },
   })
 

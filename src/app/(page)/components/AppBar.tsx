@@ -9,7 +9,7 @@ import {
   MoreHoriz as MoreHorizIcon,
 } from '@mui/icons-material'
 
-const AppBarMain = ({ open, sx, chatStore: { session }, onOpen }) => (
+const AppBarMain = ({ open, sx, chatStore: { session }, onOpen }: any) => (
   <MuiAppBar
     sx={{
       ...sx,
@@ -47,7 +47,7 @@ const AppBarMain = ({ open, sx, chatStore: { session }, onOpen }) => (
   </MuiAppBar>
 )
 
-export const AppBar = (props) => {
+export const AppBar = (props: any) => {
   const { open, onOpen, onClose } = props
   return (
     <>

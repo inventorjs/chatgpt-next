@@ -14,6 +14,7 @@ import {
   THEME_LIGHT,
   DEFAULT_SESSION_NAME,
 } from '../config'
+import { AxiosError } from 'axios';
 
 
 interface ChatItem {
@@ -82,7 +83,7 @@ export function useChat() {
       return session
     }, [sessionList, sessionId])
 
-  const send = async (content, resend = false) => {
+  const send = async (content: string, resend = false) => {
     const sendContent = content.trim()
     if (!resend && !sendContent || isProcessing) {
       return
@@ -177,8 +178,10 @@ export function useChat() {
           draft[draft['length'] - 1].status = 'cancel'
         })
       } else {
-        const detailMsg = err?.response?.data?.error?.message ?? err?.response?.data?.error?.code
-        const message = detailMsg ?? err?.message ?? '请求服务失败, 请稍后重试'
+        const resError = err as AxiosError<{error: { message: string, code: string } }>
+        const error = err as Error
+        const detailMsg = resError?.response?.data?.error?.message ?? resError?.response?.data?.error?.code
+        const message = detailMsg ?? error?.message ?? '请求服务失败, 请稍后重试'
         let lastAnswer = nextChatList.at(-1)
         const errorItem = { role: 'assistant' as const, content: message, status: 'error' as const }
         if (!lastAnswer || lastAnswer.role !== 'assistant') {
@@ -202,7 +205,7 @@ export function useChat() {
 
   const onSend = () => send(content)
 
-  const onChange = (content) => {
+  const onChange = (content: string) => {
     setContent(content)
   }
 
@@ -253,7 +256,7 @@ export function useChat() {
     }
   }
 
-  const onConfigChange = (fieldValues) => {
+  const onConfigChange = (fieldValues: Record<string, unknown>) => {
     setConfig((config) => ({ ...config, ...fieldValues }))
   }
 
