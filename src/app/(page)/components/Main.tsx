@@ -1,7 +1,15 @@
-import { useRef, useEffect } from 'react'
+import type { ChatStore } from '@/types'
+
+import React, { useRef, useEffect } from 'react'
 import { Box } from '@mui/material'
 
-export function Main({ children, chatStore: { session } }: any) {
+export function Main({
+  children,
+  chatStore: { session },
+}: {
+  children: React.ReactNode
+  chatStore: ChatStore
+}) {
   const refMain = useRef<HTMLDivElement>()
   const refAutoButtom = useRef(true)
   const refScrollTop = useRef(0)

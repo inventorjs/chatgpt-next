@@ -1,3 +1,4 @@
+import type { ChatStore } from '@/types'
 import {
   AppBar as MuiAppBar,
   Toolbar,
@@ -9,7 +10,15 @@ import {
   MoreHoriz as MoreHorizIcon,
 } from '@mui/icons-material'
 
-const AppBarMain = ({ open, sx, chatStore: { session }, onOpen }: any) => (
+interface Props {
+  open: boolean,
+  sx: Record<string, unknown>
+  chatStore: ChatStore
+  onOpen: () => void
+  onClose: () => void
+}
+
+const AppBarMain = ({ open, sx, chatStore: { session }, onOpen }: Props) => (
   <MuiAppBar
     sx={{
       ...sx,
@@ -47,7 +56,7 @@ const AppBarMain = ({ open, sx, chatStore: { session }, onOpen }: any) => (
   </MuiAppBar>
 )
 
-export const AppBar = (props: any) => {
+export const AppBar = (props: Omit<Props, 'sx'>) => {
   const { open, onOpen, onClose } = props
   return (
     <>
