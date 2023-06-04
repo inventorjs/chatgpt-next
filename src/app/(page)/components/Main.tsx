@@ -40,7 +40,6 @@ export function Main({ children, chatStore: { session } }) {
       sx={{
         position: 'relative',
         height: '100vh',
-        width: '100vw',
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',

@@ -139,7 +139,7 @@ export function useChat() {
         headers: {
           'authorization': `Bearer ${config.apiKey}`,
         },
-      }) 
+      })
 
       setIsWaiting(false)
 

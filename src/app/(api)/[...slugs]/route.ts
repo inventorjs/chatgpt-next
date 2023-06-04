@@ -19,6 +19,7 @@ export async function POST(request: NextRequest, { params }: { params: { slugs: 
     },
     body,
   })
+
   return response
 }
 

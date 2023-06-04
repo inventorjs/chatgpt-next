@@ -23,7 +23,6 @@ export const Sender = ({
     onChange,
     onAbort,
     onReAnswer,
-    onSessionAdd,
   },
 }) => {
   const refShiftDown = useRef(false)
@@ -74,59 +73,23 @@ export const Sender = ({
           pb: 'env(safe-area-inset-bottom)',
         }}
       >
-        {hasChatList && (
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              p: (theme) => theme.spacing(1),
-            }}
-          >
-            {isProcessing ? (
-              <Button
-                variant="outlined"
-                onClick={onAbort}
-                sx={{
-                  borderColor: 'action.selected',
-                  bgcolor: 'action.hover',
-                  color: 'text.secondary',
-                }}
-              >
-                <StopIcon />
-                停止响应
-              </Button>
-            ) : (
-              <Button
-                variant="outlined"
-                onClick={onReAnswer}
-                sx={{
-                  borderColor: 'action.selected',
-                  bgcolor: 'action.hover',
-                  color: 'text.secondary',
-                }}
-              >
-                <ReplayIcon />
-                重新生成响应
-              </Button>
-            )}
-          </Box>
-        )}
         <Paper
           elevation={3}
           sx={{
             display: 'flex',
             alignItems: 'center',
+            my: (theme) => theme.spacing(1),
           }}
         >
-          <IconButton
-            disabled={!hasChatList}
-            onClick={() => {
-              onSessionAdd()
-              refInput.current.focus()
-            }}
-          >
-            <CleaningServicesIcon />
-          </IconButton>
+          {isProcessing ? (
+            <IconButton disabled={!hasChatList} onClick={onAbort}>
+              <StopIcon />
+            </IconButton>
+          ) : (
+            <IconButton disabled={!hasChatList} onClick={onReAnswer}>
+              <ReplayIcon />
+            </IconButton>
+          )}
           <InputBase
             inputRef={refInput}
             sx={{ flex: 1, px: 1 }}

@@ -6,13 +6,8 @@ import {
 } from '@mui/material'
 import {
   Menu as MenuIcon,
-  Add as AddIcon,
-  ChevronLeft as ChevronLeftIcon,
   MoreHoriz as MoreHorizIcon,
 } from '@mui/icons-material'
-import { styled } from '@mui/material/styles'
-
-const drawerWith = 250
 
 const AppBarMain = ({ open, sx, chatStore: { session }, onOpen, onClose }) => (
   <MuiAppBar
