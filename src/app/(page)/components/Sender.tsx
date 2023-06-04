@@ -48,7 +48,7 @@ export const Sender = ({
     onChange(e.target.value)
   }
 
-  const hasChat = session?.chatList?.length > 0
+  const hasChat = session && session.chatList.length > 0
 
   return (
     <Box

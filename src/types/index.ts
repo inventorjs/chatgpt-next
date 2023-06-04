@@ -3,7 +3,7 @@ import type { PaletteMode } from '@mui/material'
 export interface ChatItem {
   role: 'user' | 'assistant' | 'system';
   content: string;
-  status?: 'error' | 'answer' | 'cancel';
+  status?: 'error' | 'answer' | 'cancel' | 'think';
 }
 
 export interface SessionItem {
@@ -23,7 +23,7 @@ export interface Config {
 }
 
 export interface ChatStore {
-  session: SessionItem
+  session?: SessionItem
   sessionList: SessionItem[]
   content: string
   config: Config

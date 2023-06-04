@@ -285,7 +285,7 @@ export function useChat(): ChatStore {
     }
   }
 
-  const onConfigChange = (fieldValues: Record<string, unknown>) => {
+  const onConfigChange = (fieldValues: Config) => {
     setConfig((config) => ({ ...config, ...fieldValues }))
   }
 
