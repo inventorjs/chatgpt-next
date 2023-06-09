@@ -1,4 +1,5 @@
 import type { ChatStore, ChatItem as ChatItemType, Config } from '@/types'
+import { useRef } from 'react'
 import {
   Box,
   List,
@@ -9,8 +10,18 @@ import {
   ListItemText,
 } from '@mui/material'
 import ReactMarkdown from 'react-markdown'
+import { Cursor } from './Cursor'
 
-function ChatItem({ item, config }: { item: ChatItemType, config: Config }) {
+function ChatItem({
+  item,
+  config,
+  isActive,
+}: {
+  item: ChatItemType
+  config: Config
+  isActive: boolean
+}) {
+  const refText = useRef<HTMLElement>(null)
   return (
     <ListItem
       sx={{
@@ -26,10 +37,14 @@ function ChatItem({ item, config }: { item: ChatItemType, config: Config }) {
     >
       <Container sx={{ display: 'flex' }} disableGutters maxWidth="md">
         <ListItemAvatar>
-          <Avatar src={item.role === 'assistant' ? `/${config.gptModel}.png` : ''} />
+          <Avatar
+            src={item.role === 'assistant' ? `/${config.gptModel}.png` : ''}
+          />
         </ListItemAvatar>
         <ListItemText
+          ref={refText}
           sx={{
+            position: 'relative',
             color: 'text.primary',
             '& pre': {
               whiteSpace: 'pre-wrap',
@@ -42,27 +57,46 @@ function ChatItem({ item, config }: { item: ChatItemType, config: Config }) {
               borderRadius: 2,
               p: 2,
               my: (theme) => theme.spacing(item.status === 'error' ? 1 : 2),
+              '& .x-cursor': {
+                bgcolor: 'grey.50',
+              }
             },
           }}
         >
           {item.status === 'error' ? (
             <pre>{item.content}</pre>
           ) : (
-            <ReactMarkdown>{item.content}</ReactMarkdown>
+            <>
+              <ReactMarkdown>{item.content}</ReactMarkdown>
+            </>
           )}
-          {item.status === 'cancel' && <pre>User stop the answer</pre>}
+          {item.status === 'cancel' && <pre>当前响应已被停止</pre>}
+          <Cursor
+            isShow={isActive && item.role === 'assistant'}
+            refContainer={refText}
+            content={item.content}
+          />
         </ListItemText>
       </Container>
     </ListItem>
   )
 }
 
-export const ChatList = ({ chatStore: { session, config } }: { chatStore: ChatStore }) => {
+export const ChatList = ({
+  chatStore: { session, config, isProcessing },
+}: {
+  chatStore: ChatStore
+}) => {
   return (
     <Box sx={{ flex: 1 }}>
       <List sx={{ pt: 0 }}>
         {session?.chatList?.map((item: any, index: any) => (
-          <ChatItem key={index} item={item} config={config} />
+          <ChatItem
+            key={index}
+            item={item}
+            config={config}
+            isActive={index === session.chatList.length - 1 && isProcessing}
+          />
         ))}
       </List>
     </Box>

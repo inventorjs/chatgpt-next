@@ -48,8 +48,12 @@ export function Main({
       ref={refMain}
       component="main"
       sx={{
-        position: 'relative',
-        height: '100vh',
+        position: { xs: 'absolute', md: 'relative' },
+        height: { xs: '100%', md: '100vh' },
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',

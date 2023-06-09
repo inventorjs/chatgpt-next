@@ -74,39 +74,6 @@ export function useChat(): ChatStore {
     return sessionIndex
   }, [sessionList, sessionId])
 
-  const startThink = (sessionList: SessionItem[], sessionIndex: number) => {
-    let isStoped = false
-    let thinkCount = 0
-    const session = sessionList[sessionIndex]
-    const chatList = produce(session?.chatList ?? [], (draft: ChatItem[]) => {
-      draft.push({
-        role: 'assistant',
-        content: '思考中',
-        status: 'think',
-      })
-    })
-    const thinkIndex = chatList.length - 1
-
-    function think() {
-      if (isStoped) return
-      const nextChatList = produce(chatList, (draft) => {
-        draft[thinkIndex].content = `思考中${'.'.repeat(thinkCount)}`
-      })
-      setSessionList(produce(sessionList, (draft) => {
-        draft[sessionIndex].chatList = nextChatList
-      }))
-      thinkCount = (thinkCount + 1) % 4
-      setTimeout(think, 300);
-    }
-
-    think()
-
-    return () => {
-      isStoped = true
-      thinkCount = 0
-    }
-  }
-
   const send = async (content: string, resend = false) => {
     const sendContent = content.trim()
     if (!resend && !sendContent || isProcessing) {
@@ -144,10 +111,17 @@ export function useChat(): ChatStore {
       nextChatList = nextSessionList[nextSessionIndex].chatList
     }
 
+    nextSessionList = produce(nextSessionList, (draft) => {
+      draft[nextSessionIndex].chatList.push({
+        content: '\u200b',
+        role: 'assistant',
+        status: 'think',
+      })
+    })
+
     setSessionList(nextSessionList)
     setContent('')
     setIsProcessing(true)
-    const stopThink = startThink(nextSessionList, nextSessionIndex)
     cancelRef.current = false
     refAbortController.current = new AbortController()
     try {
@@ -167,8 +141,6 @@ export function useChat(): ChatStore {
           'authorization': `Bearer ${config.apiKey}`,
         },
       })
-
-      stopThink()
 
       const reader = data.getReader()
       while (true) {
@@ -202,7 +174,6 @@ export function useChat(): ChatStore {
         }
       }
     } catch (err) {
-      stopThink()
       if (cancelRef.current) {
         nextChatList = produce(nextChatList, (draft) => {
           draft[draft.length - 1].status = 'cancel'
