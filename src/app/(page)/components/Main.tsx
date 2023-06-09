@@ -49,11 +49,8 @@ export function Main({
       component="main"
       sx={{
         position: { xs: 'absolute', md: 'relative' },
-        height: { xs: '100%', md: '100vh' },
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
+        height: { md: '100vh' },
+        inset: { xs: 0, md: 'auto' },
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',

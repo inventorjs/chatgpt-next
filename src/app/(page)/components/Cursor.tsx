@@ -75,7 +75,7 @@ export function Cursor({ isShow, content, refContainer }: Props) {
           left: left - pLeft,
         })
         if (isInCode(lastTextNode.parentNode, refContainer.current)) {
-          setCursorColor('background.default')
+          setCursorColor('white')
         } else {
           setCursorColor('text.primary')
         }
