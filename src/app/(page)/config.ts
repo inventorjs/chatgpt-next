@@ -1,6 +1,6 @@
 export const gptModelOptions = [
   { value: 'gpt-3.5-turbo', label: 'GPT-3.5' },
-  { value: 'gpt-4', label: 'GPT-4.0', disabled: true },
+  { value: 'gpt-4', label: 'GPT-4', disabled: true },
 ]
 
 export const aiModeOptions = [
