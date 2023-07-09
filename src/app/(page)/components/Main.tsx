@@ -1,18 +1,13 @@
-import type { ChatStore } from '@/types'
-
 import React, { useRef, useEffect } from 'react'
 import { Box } from '@mui/material'
+import { useSelector } from 'react-redux'
+import { selectSession } from '../store/slices/chatSlice'
 
-export function Main({
-  children,
-  chatStore: { session },
-}: {
-  children: React.ReactNode
-  chatStore: ChatStore
-}) {
+export function Main({ children }: { children: React.ReactNode }) {
   const refMain = useRef<HTMLDivElement>()
   const refAutoButtom = useRef(true)
   const refScrollTop = useRef(0)
+  const session = useSelector(selectSession)
 
   useEffect(() => {
     if (refMain.current) {

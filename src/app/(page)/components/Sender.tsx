@@ -1,28 +1,21 @@
-import type { ChatStore } from '@/types'
+import type { RootState } from '../store'
 
 import { useRef } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { Box, Container, Paper, InputBase, IconButton } from '@mui/material'
 import {
   Send as SendIcon,
   Replay as ReplayIcon,
   Stop as StopIcon,
 } from '@mui/icons-material'
+import { changeContent, send, resend, abort, selectState, selectSession } from '../store/slices/chatSlice'
 
-export const Sender = ({
-  chatStore: {
-    session,
-    content,
-    isProcessing,
-    onSend,
-    onChange,
-    onAbort,
-    onReAnswer,
-  },
-}: {
-  chatStore: ChatStore
-}) => {
+export const Sender = () => {
   const refShiftDown = useRef(false)
   const refInput = useRef()
+  const dispatch = useDispatch()
+  const { content, isProcessing } = useSelector(selectState)
+  const session = useSelector(selectSession)
 
   const handleKeydown = (e: any) => {
     if (e.keyCode === 16) {
@@ -35,7 +28,7 @@ export const Sender = ({
       refShiftDown.current = false
     }
     if (e.keyCode === 13 && !e.shiftKey) {
-      onSend()
+      dispatch(send())
       e.preventDefault()
     }
   }
@@ -45,7 +38,7 @@ export const Sender = ({
       e.preventDefault()
       return false
     }
-    onChange(e.target.value)
+    dispatch(changeContent(e.target.value))
   }
 
   const hasChat = session && session.chatList.length > 0
@@ -78,7 +71,7 @@ export const Sender = ({
           }}
         >
           {!isProcessing && hasChat && (
-            <IconButton disabled={!hasChat} onClick={onReAnswer}>
+            <IconButton disabled={!hasChat} onClick={() => dispatch(resend())}>
               <ReplayIcon />
             </IconButton>
           )}
@@ -94,13 +87,13 @@ export const Sender = ({
             onKeyDown={handleKeydown}
           />
           {isProcessing ? (
-            <IconButton disabled={!hasChat} onClick={onAbort}>
+            <IconButton disabled={!hasChat} onClick={() => dispatch(abort())}>
               <StopIcon />
             </IconButton>
           ) : (
             <IconButton
               disabled={!content.trim() || isProcessing}
-              onClick={onSend}
+              onClick={() => dispatch(send())}
             >
               <SendIcon />
             </IconButton>

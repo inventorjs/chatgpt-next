@@ -1,4 +1,4 @@
-import type { ChatStore } from '@/types'
+import type { SessionItem } from '@/types'
 import {
   AppBar as MuiAppBar,
   Toolbar,
@@ -9,16 +9,18 @@ import {
   Menu as MenuIcon,
   MoreHoriz as MoreHorizIcon,
 } from '@mui/icons-material'
+import { useSelector } from 'react-redux'
+import { selectSession } from '../store/slices/chatSlice'
 
 interface Props {
+  session?: SessionItem
   open: boolean,
   sx: Record<string, unknown>
-  chatStore: ChatStore
   onOpen: () => void
   onClose: () => void
 }
 
-const AppBarMain = ({ open, sx, chatStore: { session }, onOpen }: Props) => (
+const AppBarMain = ({ open, sx, onOpen, session }: Props) => (
   <MuiAppBar
     sx={{
       ...sx,
@@ -58,11 +60,14 @@ const AppBarMain = ({ open, sx, chatStore: { session }, onOpen }: Props) => (
 
 export const AppBar = (props: Omit<Props, 'sx'>) => {
   const { open, onOpen, onClose } = props
+  const session = useSelector(selectSession)
+
   return (
     <>
-      <AppBarMain {...props} sx={{ display: { md: 'none' } }} />
+      <AppBarMain {...props} session={session} sx={{ display: { md: 'none' } }} />
       <AppBarMain
         {...props}
+        session={session}
         sx={{ display: { xs: 'none', md: 'block' } }}
         open={!open}
         onOpen={onClose}

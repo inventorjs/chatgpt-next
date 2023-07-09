@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import {
   Drawer as MuiDrawer,
   List,
@@ -22,35 +22,40 @@ import {
   Brightness2 as DarkIcon,
   LightMode as LightIcon,
 } from '@mui/icons-material'
+import { useSelector, useDispatch } from 'react-redux'
 import { ConfigForm } from './ConfigForm'
-import { THEME_DARK, DRAWER_WIDTH } from '../../config'
+import {
+  selectSession,
+  selectState,
+  addSession,
+  removeSession,
+  switchSession,
+  updateSession,
+} from '../../store/slices/chatSlice'
+import {
+  selectState as selectConfig,
+  updateConfig,
+} from '../../store/slices/configSlice'
+import { THEME_DARK, DRAWER_WIDTH, THEME_LIGHT } from '../../config'
 
-function Drawer({ sx, variant, open, themeMode, onClose, chatStore }: any) {
-  const {
-    session,
-    sessionList,
-    isSessionEdit,
-    config,
-    onConfigChange,
-    onSessionChange,
-    onSessionRemove,
-    onSessionAdd,
-    onSessionEdit,
-    onSessionEditFinish,
-    onSessionTitleChange,
-    onThemeModeSwitch,
-  } = chatStore
+function Drawer({ sx, variant, open, onClose }: any) {
+  const [editSessionTitle, setEditSessionTitle] = useState<string | null>(null)
+  const dispatch = useDispatch()
+  const { sessionList } = useSelector(selectState)
+  const { themeMode, ...config } = useSelector(selectConfig)
+  const session = useSelector(selectSession)
   const inputRef = useRef<HTMLInputElement>()
 
   useEffect(() => {
-    if (isSessionEdit && inputRef.current) {
+    if (editSessionTitle && inputRef.current) {
       inputRef.current.focus()
     }
-  }, [isSessionEdit])
+  }, [editSessionTitle])
 
   const handleKeyUp = (e: any) => {
     if (e.keyCode === 13) {
-      onSessionEditFinish()
+      dispatch(updateSession({ title: e.target.value }))
+      setEditSessionTitle(null)
     }
   }
 
@@ -89,7 +94,7 @@ function Drawer({ sx, variant, open, themeMode, onClose, chatStore }: any) {
             marginLeft: (theme) => theme.spacing(2),
           }}
           disabled={!session?.chatList?.length}
-          onClick={onSessionAdd}
+          onClick={() => dispatch(addSession())}
         >
           新建会话
         </Button>
@@ -104,20 +109,34 @@ function Drawer({ sx, variant, open, themeMode, onClose, chatStore }: any) {
             <ListItem
               disablePadding
               key={index}
-              onClick={() => onSessionChange(item.id)}
+              onClick={() => dispatch(switchSession(item.id))}
               secondaryAction={
                 item.id === session?.id && (
                   <>
-                    {isSessionEdit ? (
-                      <IconButton onClick={onSessionEditFinish}>
+                    {editSessionTitle !== null ? (
+                      <IconButton
+                        onClick={() => {
+                          dispatch(updateSession({ title: editSessionTitle }))
+                          setEditSessionTitle(null)
+                        }}
+                      >
                         <SaveIcon fontSize="small" />
                       </IconButton>
                     ) : (
-                      <IconButton onClick={onSessionEdit}>
+                      <IconButton
+                        onClick={() =>
+                          session && setEditSessionTitle(session?.title)
+                        }
+                      >
                         <EditIcon fontSize="small" />
                       </IconButton>
                     )}
-                    <IconButton onClick={() => onSessionRemove(session.id)}>
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        dispatch(removeSession())
+                      }}
+                    >
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   </>
@@ -128,11 +147,11 @@ function Drawer({ sx, variant, open, themeMode, onClose, chatStore }: any) {
                 <ListItemIcon sx={{ minWidth: 32 }}>
                   <SpeakerNotesIcon fontSize="small" />
                 </ListItemIcon>
-                {isSessionEdit && item.id === session?.id ? (
+                {editSessionTitle && item.id === session?.id ? (
                   <InputBase
                     inputRef={inputRef}
-                    value={item.title}
-                    onChange={(e) => onSessionTitleChange(e.target.value)}
+                    value={editSessionTitle}
+                    onChange={(e) => setEditSessionTitle(e.target.value)}
                     onKeyUp={handleKeyUp}
                   />
                 ) : (
@@ -157,12 +176,21 @@ function Drawer({ sx, variant, open, themeMode, onClose, chatStore }: any) {
             justifyContent: 'flex-end',
           }}
         >
-          <IconButton onClick={onThemeModeSwitch}>
+          <IconButton
+            onClick={() =>
+              dispatch(
+                updateConfig({
+                  themeMode:
+                    themeMode === THEME_DARK ? THEME_LIGHT : THEME_DARK,
+                }),
+              )
+            }
+          >
             {themeMode === THEME_DARK ? <DarkIcon /> : <LightIcon />}
           </IconButton>
         </Box>
 
-        <ConfigForm value={config} onChange={onConfigChange} />
+        <ConfigForm value={config} onChange={(config) => dispatch(updateConfig(config)) } />
       </Paper>
     </MuiDrawer>
   )

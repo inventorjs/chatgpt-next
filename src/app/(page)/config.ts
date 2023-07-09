@@ -26,3 +26,4 @@ export const THEME_LIGHT = 'light'
 export const DEFAULT_SESSION_NAME = '新会话'
 
 export const DRAWER_WIDTH = 250
+export const EMPTY_CHAR = '\u200b'
